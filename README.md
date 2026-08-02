@@ -64,27 +64,27 @@ curl https://api.example.com/user
 curl -X POST -H "Content-Type: application/json" -d '{"name":"test"}' https://api.example.com/user
 ### Basic Options
 # Request Method
--X, --request <方法>        # Specify the request method（GET/POST/PUT/DELETE/PATCH/HEAD/OPTIONS/TRACE）
+-X, --request <method>        # Specify the request method（GET/POST/PUT/DELETE/PATCH/HEAD/OPTIONS/TRACE）
 # Request Header
--H, --header <请求头>       # Add HTTP request header
+-H, --header <header>       # Add HTTP request header
 # Data transmission (POS/PUT specific)
--d, --data <数据>           # Sending regular data
---data-ascii <数据>         # Send ASCII format data
---data-binary <数据>        # Sending binary data
---data-raw <数据>           # Sending unprocessed raw data
---data-urlencode <数据>     # Send URL encoded form data
+-d, --data <data>           # Sending regular data
+--data-ascii <data>         # Send ASCII format data
+--data-binary <data>        # Sending binary data
+--data-raw <data>           # Sending unprocessed raw data
+--data-urlencode <data>     # Send URL encoded form data
 # Authorization related
--u, --user <用户:密码>      # Server username and password
+-u, --user <username:password>      # Server username and password
 # redirect
 -L, --location              # Follow redirect
---max-redirs <次数>         # Maximum number of redirects
+--max-redirs <number>         # Maximum number of redirects
 # output control
--o, --output <文件>         # Write output to a file instead of standard output
+-o, --output <file>         # Write output to a file instead of standard output
 # File/Form Upload
--F, --form <名称=内容>      # Specify multi part form data
+-F, --form <key=value>      # Specify multi part form data
 # Agency related
--x, --proxy <[协议://]主机[:端口]>  #Use HTTP/HTTPS proxy
---socks5-hostname <主机[:端口]>     # SOCKS5 Proxy
+-x, --proxy <[protocol://]host[:port]>  #Use HTTP/HTTPS proxy
+--socks5-hostname <host[:port]>     # SOCKS5 Proxy
 # Protocol/Security
 --http2                     # Using HTTP/2 protocol
 -k, --insecure              # Allow insecure server connections
@@ -144,13 +144,11 @@ curl -X POST -H "Content-Type: application/json" -d '{"name":"test"}' https://ap
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE curls PUBLIC "-//PAOHAIJIAO//DTD API CURL 1.0//EN"
             "classpath:paohaijiao/dtd/Jquick-curl.dtd">
-    <!-- 
-      XML配置说明：
-      - namespace：绑定对应的Java接口全类名
-      - curl节点：每个节点对应一个接口方法
-        - name：方法名（需与Java接口方法名一致）
-        - returnClass：方法返回值类型（全类名）
-     -->
+<!-- XML Configuration Notes: - namespace: Binds to the fully qualified name of 
+the corresponding Java interface - curl node: Each node 
+corresponds to an interface method - name: 
+Method name (must match the Java interface method name) - 
+returnClass: Method return type (fully qualified class name) -->
     <curls namespace="com.github.paohaijiao.test.xml.UserApi">
         <curl name="users" returnClass="com.github.paohaijiao.test.model.JUser">
             curl -X POST http://localhost:8080/api/users/createUser \
@@ -188,89 +186,54 @@ curl -X POST -H "Content-Type: application/json" -d '{"name":"test"}' https://ap
 ```java
 
 public interface UserService {
-    /**
-     * 获取用户列表
-     * GET请求：无请求体，直接通过URL获取资源
-     */
+
     @JCurlCommand("curl -X GET --location 'http://localhost:8080/api/users/all'")
     List<JUser> all(JQuickCurlReq req);
-    /**
-     * 根据用户ID查询单个用户信息
-     * GET请求：无请求体，直接通过URL获取资源
-     */
+
     @JCurlCommand("curl -X GET http://localhost:8080/api/users/1")
     JUser getUserById(JQuickCurlReq req);
-    /**
-     * 创建新用户
-     * POST请求：携带JSON格式请求体，指定Content-Type为application/json
-     */
+
     @JCurlCommand("curl -X POST http://localhost:8080/api/users/createUser \\\n" +
             "-H \"Content-Type: application/json\" \\\n" +
             "-d '{\"name\":\"John Doe\",\"email\":\"john@example.com\"}'")
     JUser users(JQuickCurlReq req);
-    /**
-     * 全量更新用户信息
-     * PUT请求：替换指定ID的完整用户信息，需传递全部字段
-     */
+
     @JCurlCommand("curl -X PUT http://localhost:8080/api/users/1 \\\n" +
             "-H \"Content-Type: application/json\" \\\n" +
             "-d '{\"name\":\"John Doe Updated\",\"email\":\"john.updated@example.com\"}'")
     JUser usersPut(JQuickCurlReq req);
-    /**
-     * PATCH请求：局部更新用户信息（仅修改需要变更的字段）
-     */
+
     @JCurlCommand("curl -X PATCH http://localhost:8080/api/users/1 \\\n" +
             "-H \"Content-Type: application/json\" \\\n" +
             "-d '{\"name\":\"John Doe Patched\"}'")
     JUser usersPatch(JQuickCurlReq req);
-    /**
-     * 删除指定ID的用户
-     * DELETE请求：无返回值（Void
-     */
+
     @JCurlCommand("curl -X DELETE http://localhost:8080/api/users/1")
     Void usersDelete(JQuickCurlReq req);
-    /**
-     * HEAD请求：仅获取响应头信息（-I参数），无响应体
-     */
+
     @JCurlCommand("curl  -X HEAD -I http://localhost:8080/api/users/1")
     Void usersHead(JQuickCurlReq req);
-    /**
-     * OPTIONS请求：获取服务器支持的HTTP方法列表
-     */
+
     @JCurlCommand("curl -X OPTIONS http://localhost:8080/api/users/1")
     JResult usersOptions(JQuickCurlReq req);
-    /**
-     * TRACE请求：回显服务器收到的请求，用于调试
-     */
+
     @JCurlCommand("curl -X TRACE http://localhost:8080/api/users/trace \\\n" +
             "-H \"Content-Type: text/plain\" \\\n" +
             "-d \"This is a trace request body\"")
     String usersTrace(JQuickCurlReq req);
-    /**
-     * 上传单个文件
-     * -F参数：指定multipart/form-data格式，@符号后为本地文件路径
-     */
+
     @JCurlCommand("curl -X POST http://localhost:8080/api/users/upload \\\n" +
             "-F \"file=@D:\\test\\test.txt\"")
     String upload(JQuickCurlReq req);
-    /**
-     * 批量上传多个文件
-     * 多个-F参数：同名参数（files）传递多个文件，服务端接收文件列表
-     */
+
     @JCurlCommand("curl -X POST http://localhost:8080/api/users/upload-multiple \\\n" +
             "-F \"files=@D:\\test\\test.txt\"-F \"files=@D:\\test\\test1.txt\"")
     String upload1(JQuickCurlReq req);
-    /**
-     * 下载文件到指定路径
-     * --output参数：将响应内容写入本地文件，返回字节数组（byte[]）便于处理
-     */
+
     @JCurlCommand("curl -X GET http://localhost:8080/api/users/download/test.txt \\\n" +
             "--output 'd://test//download.txt'")
     byte[] download(JQuickCurlReq req);
-    /**
-     * 上传文件并携带额外表单参数
-     * 混合-F参数：既有普通表单字段（userId/username），也有文件字段（file）
-     */
+
     @JCurlCommand("curl -X POST http://localhost:8080/api/users/upload-with-params \\\n" +
             "-F \"userId=123\" \\\n" +
             "-F \"username=john\" \\\n" +
@@ -672,12 +635,8 @@ public static void main(String[] args) throws Exception {
 ```
 ### 2. Global variable support
 ```java
-/**
-* 命令中使用${变量名}占位符，运行时从JQuickCurlReq中取值替换
-* 适用场景：通用配置（如认证信息、基础域名），避免硬编码
-  */
+
     public interface ApiService {
-        // 调用示例（${字段名} 字段级别）
         @JCurlCommand("curl -u ${user}:${password} https://api.github.com/user -X GET")
         JGithubAuth retriveUser(JQuickCurlReq req);
     }
@@ -685,27 +644,20 @@ public static void main(String[] args) throws Exception {
     public  void retriveUser() throws Exception {
         ApiService api = JCurlInvoker.createProxy(ApiService.class);
         JQuickCurlReq req = new JQuickCurlReq();
-        // 给占位符${user}/${password}赋值
         req.put("user", "xsasaxsa@qq.com");
         req.put("password", "xasxsa");
-        // 执行请求，框架自动替换变量
         JGithubAuth result = api.retriveUser(req);
     }
 ```
 ### 3. Parameterized interface method
 ```java
-    /**
-    * 接口方法参数绑定（#{参数名}占位符 + @Param注解）
-    * 适用场景：动态拼接请求体/URL，直接使用方法入参，无需通过JQuickCurlReq传递
-    * 注意：占位符格式为#{参数名}，需与@Param注解的value一致
-      */
+
     public interface ApiService {
         @JCurlCommand("curl -X POST http://localhost:8080/api/users/createUser \\\n" +
                 "-H \"Content-Type: application/json\" \\\n" +
                 "-d '{\"name\":#{name},\"email\":#{email}}'")
         JUser usersByVariable(@Param("name") String name, @Param("email") String email);
     }
-    // 调用示例（直接传参（#{字段名}），更符合Java接口调用习惯）
     @Test
     public  void retriveUser() throws Exception {
         UserService api = JCurlInvoker.createProxy(UserService.class);
@@ -734,7 +686,6 @@ public class CustomInterceptor implements Interceptor {
    @Override
    public Response intercept(Chain chain) throws IOException {
       Request request = chain.request();
-      // 示例：统一添加Token请求头
       // request.addHeader("Authorization", "Bearer " + getToken());
       Response response;
       try {
@@ -743,14 +694,11 @@ public class CustomInterceptor implements Interceptor {
          log.error("<-- HTTP FAILED: " + e);
          throw e;
       }
-      // 示例：统一添加响应
       return response;
    }
     @Override
     public void init()  {
-        // 全局配置拦截器（生效于所有请求）
         JQuickCurlConfig config = JQuickCurlConfig.getInstance();
-        // 添加自定义拦截器（支持添加多个，按添加顺序执行）
         config.addInterceptor(new CustomInterceptor());
     }
 ```
@@ -763,29 +711,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
-/**
- * JCurlInvoker 核心功能单元测试
- * 验证代理调用、参数传递、文件下载等基础功能
- */
+
 public class JCurlInvokerInvokeTest {
     
-    /**
-     * 测试基础认证接口调用（全局变量替换）
-     * 验证${user}/${password}占位符替换和接口返回值解析
-     */
+
     @Test
     public void retriveUser() throws Exception {
-        // 创建API代理实例
         ApiService api = JCurlInvoker.createProxy(ApiService.class);
-        
-        // 准备请求参数（绑定全局变量）
         JQuickCurlReq req = new JQuickCurlReq();
         req.put("user", "xsasaxsa@qq.com");
         req.put("password", "xasxsa");
-        
-        // 执行请求并获取结果
         JGithubAuth result = api.retriveUser(req);
-        System.out.println(result); // 打印结果用于调试
+        System.out.println(result); 
     }
     
     /**
@@ -794,15 +731,11 @@ public class JCurlInvokerInvokeTest {
      */
     @Test
     public void downloadByte() throws Exception {
-        // 创建API代理实例
         UserService api = JCurlInvoker.createProxy(UserService.class);
-        // 准备请求参数
         JQuickCurlReq req = new JQuickCurlReq();
         req.put("user", "xsasaxsa@qq.com");
         req.put("password", "xasxsa");
-        // 执行下载请求，获取字节数组
         byte[] bytes = api.download(req);
-        // 将下载的字节写入本地文件
         Path path = Paths.get("d://test/xx1.txt");
         Files.write(path, bytes, StandardOpenOption.CREATE);
     }
@@ -812,27 +745,15 @@ public class JCurlInvokerInvokeTest {
 ```java
 import org.junit.Test;
 import java.util.List;
-/**
-* XML配置方式的接口调用测试
-* 验证XML配置加载、接口代理生成、配置化接口调用
-  */
 public class CurlApiExample {
-
-  /**
-    * 测试XML配置的接口调用
-    * 验证apis.xml配置加载及all方法的执行结果
-      */
+    
       @Test
       public void all1() throws Exception {
-          // 准备请求参数
           JQuickCurlReq req = new JQuickCurlReq();
           req.put("user", "xsaxsa@qq.com");
           req.put("password", "zaZAzaZA");
-          // 加载XML配置文件，创建工厂实例
           CurlApiFactory factory = new CurlApiFactory("apis.xml");
-          // 生成XML绑定的接口代理
           UserApi userApi = factory.createApi(UserApi.class);
-          // 执行接口方法，获取结果并打印
           List<JUser> list = userApi.all(req);
           System.out.println(list);
       }
