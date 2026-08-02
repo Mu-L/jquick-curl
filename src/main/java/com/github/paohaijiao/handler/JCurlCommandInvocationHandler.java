@@ -19,9 +19,12 @@ import com.github.paohaijiao.anno.JCurlCommand;
 import com.github.paohaijiao.anno.JTimeout;
 import com.github.paohaijiao.config.JQuickCurlConfig;
 import com.github.paohaijiao.domain.req.JQuickCurlReq;
+import com.github.paohaijiao.factory.JCurlCommandProcessorFactory;
 import com.github.paohaijiao.param.JContext;
 import com.github.paohaijiao.support.JCurlCommandProcessor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -42,6 +45,18 @@ public class JCurlCommandInvocationHandler implements InvocationHandler {
     private JContext context=new JContext();
 
     private JQuickCurlConfig config=JQuickCurlConfig.getInstance();
+
+    private static final GenericObjectPool<JCurlCommandProcessor> processorPool;
+
+    static {
+        GenericObjectPoolConfig<JCurlCommandProcessor> poolConfig = new GenericObjectPoolConfig<>();
+        poolConfig.setMaxTotal(8);
+        poolConfig.setMaxIdle(4);
+        poolConfig.setMinIdle(1);
+        poolConfig.setTestOnBorrow(true);
+        poolConfig.setTestWhileIdle(true);
+        processorPool = new GenericObjectPool<>(new JCurlCommandProcessorFactory(), poolConfig);
+    }
 
     public JCurlCommandInvocationHandler() {
         this.context =new JContext();
@@ -67,7 +82,6 @@ public class JCurlCommandInvocationHandler implements InvocationHandler {
             throw new UnsupportedOperationException("Method is not annotated with @JCurlCommand");
         }
         log.info("the current command is {}", curlCommand.value());
-        System.out.println( curlCommand.value());
         for (int i = 0; i < args.length; i++) {
             Object object = args[i];
             if (object instanceof JQuickCurlReq) {
@@ -84,10 +98,34 @@ public class JCurlCommandInvocationHandler implements InvocationHandler {
             this.config.setWriteTimeout(timeout.write());
         }
         Class<?> returnType = method.getReturnType();
-        JCurlCommandProcessor curl=  new JCurlCommandProcessor(context,config);
-        Object result = curl.processMethod(null, method, args, returnType);
-        Object typedResult = returnType.cast(result);
-        return typedResult;
+        int maxRetryCount = this.config.getMaxRetryCount();
+        Exception lastException = null;
+        for (int attempt = 0; attempt <= maxRetryCount; attempt++) {
+            JCurlCommandProcessor curl = null;
+            try {
+                curl = processorPool.borrowObject();
+                curl.setContext(this.context);
+                curl.setConfig(this.config);
+                Object result = curl.processMethod(null, method, args, returnType);
+                Object typedResult = returnType.cast(result);
+                return typedResult;
+            } catch (Exception e) {
+                lastException = e;
+                log.warn("attempt {} failed for method {}: {}", attempt + 1, method.getName(), e.getMessage());
+                if (attempt < maxRetryCount) {
+                    log.info("retrying... ({}/{})", attempt + 1, maxRetryCount);
+                }
+            } finally {
+                if (curl != null) {
+                    try {
+                        processorPool.returnObject(curl);
+                    } catch (Exception e) {
+                        log.error("failed to return object to pool", e);
+                    }
+                }
+            }
+        }
+        throw lastException != null ? lastException : new RuntimeException("retry exhausted");
     }
     public static <T> T createProxy(Class<T> interfaceClass) {
         return (T) Proxy.newProxyInstance(interfaceClass.getClassLoader(), new Class<?>[]{interfaceClass}, new JCurlCommandInvocationHandler());

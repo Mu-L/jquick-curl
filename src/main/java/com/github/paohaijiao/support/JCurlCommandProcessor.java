@@ -69,6 +69,14 @@ public class JCurlCommandProcessor {
         this.context =context;
         this.config =config;
     }
+
+    public void setContext(JContext context) {
+        this.context = context;
+    }
+
+    public void setConfig(JQuickCurlConfig config) {
+        this.config = config;
+    }
     public <T> T process(Object object, Method method, Object[] args,Class<T> interfaceClass) throws Exception {
         JCurlCommand annotation = method.getAnnotation(JCurlCommand.class);
         if (annotation == null) {

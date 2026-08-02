@@ -56,6 +56,8 @@ public class JQuickCurlConfig {
 
     private Boolean retryOnConnectionFailure = true;
 
+    private int maxRetryCount = 3;
+
     private Boolean followRedirects = true;
 
     private Boolean followSslRedirects = true;
@@ -108,6 +110,11 @@ public class JQuickCurlConfig {
         return this;
     }
 
+    public JQuickCurlConfig maxRetryCount(int maxRetryCount) {
+        this.maxRetryCount = maxRetryCount;
+        return this;
+    }
+
     public JQuickCurlConfig followRedirects(boolean follow) {
         this.followRedirects = follow;
         return this;
@@ -128,6 +135,7 @@ public class JQuickCurlConfig {
         this.writeTimeout = Long.parseLong(props.getProperty("quick.curl.write.timeout", String.valueOf(writeTimeout)));
         this.maxIdleConnections = Integer.parseInt(props.getProperty("quick.curl.pool.max.idle", String.valueOf(maxIdleConnections)));
         this.keepAliveDuration = Long.parseLong(props.getProperty("quick.curl.pool.keep.alive", String.valueOf(keepAliveDuration)));
+        this.maxRetryCount = Integer.parseInt(props.getProperty("quick.curl.max.retry.count", String.valueOf(maxRetryCount)));
         return this;
     }
     public JQuickCurlConfig loadFromClasspathResource(String resourceName) throws IOException {
