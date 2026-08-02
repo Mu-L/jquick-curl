@@ -53,12 +53,9 @@ public class JQuickCurlXmlInvocationHandler extends JQuickXmlInvocationHandler {
     protected Object loadResult(String curlCommand, JContext context, Method method, Object[] args) {
         JQuickCurlConfig config=JQuickCurlConfig.getInstance();
         JQuickCurlExecutor executor = new JQuickCurlExecutor(context,config);
-        executor.addErrorListener(error -> {String message=String.format("Failed: Line %d:%d - %s%n",  error.getLine(), error.getCharPosition(), error.getMessage());
-            console.log(JLogLevel.ERROR,message);
-        });
+        executor.addErrorListener(error -> {String message=String.format("Failed: Line %d:%d - %s%n",  error.getLine(), error.getCharPosition(), error.getMessage());console.log(JLogLevel.ERROR,message);});
         try {
             String curlString=replaceVariables(curlCommand,context);
-            console.log(JLogLevel.INFO,"Merged curl command:"+ curlString);
             JQuickCurlResponseBody raw = executor.execute(curlString);
             console.info("result:"+raw);
             JQuickCurlResponseConvert convert=new JQuickCurlResponseConvert();

@@ -72,19 +72,18 @@ public class JLoggingInterceptor implements Interceptor {
         return response;
     }
     private void logRequest(Request request) throws IOException {
-        console.log(JLogLevel.INFO,"当前的Method 是:"+request.method());
-        console.log(JLogLevel.INFO,"当前的url 是:"+request.url());
+        console.log(JLogLevel.INFO,"current url is:"+request.url());
         if (level == JCurlLevelLog.HEADERS || level == JCurlLevelLog.ALL) {
             Headers headers = request.headers();
             for (int i = 0, count = headers.size(); i < count; i++) {
-                console.log(JLogLevel.INFO,"当前的header是-->"+headers.name(i)+":"+headers.value(i));
+                console.log(JLogLevel.INFO,"current header is-->"+headers.name(i)+":"+headers.value(i));
             }
             if (level == JCurlLevelLog.ALL && request.body() != null) {
                 RequestBody requestBody = request.body();
                 if (isPlaintext(requestBody.contentType())) {
                     Buffer buffer = new Buffer();
                     requestBody.writeTo(buffer);
-                    console.log(JLogLevel.INFO,"当前的requestBody是-->"+buffer.readString(UTF8));
+                    console.log(JLogLevel.INFO,"current request body is-->"+buffer.readString(UTF8));
                 } else {
                     console.log(JLogLevel.INFO," [binary body omitted, content-type: {"+requestBody.contentType()+"}]");
                 }
@@ -98,13 +97,13 @@ public class JLoggingInterceptor implements Interceptor {
         if (level == JCurlLevelLog.HEADERS || level == JCurlLevelLog.ALL) {
             Headers headers = response.headers();
             for (int i = 0, count = headers.size(); i < count; i++) {
-                console.log(JLogLevel.INFO,"当前的header是-->"+headers.name(i)+":"+headers.value(i));
+                console.log(JLogLevel.INFO,"current header is-->"+headers.name(i)+":"+headers.value(i));
             }
             if (level == JCurlLevelLog.ALL && response.body() != null) {
                 ResponseBody responseBody = response.body();
                 if (isPlaintext(responseBody.contentType())) {
                     String bodyString = responseBody.string();
-                    console.log(JLogLevel.INFO,"当前的requestBody是-->"+bodyString);
+                    console.log(JLogLevel.INFO,"current request body is-->"+bodyString);
                     response = response.newBuilder().body(ResponseBody.create(bodyString, responseBody.contentType())).build();
                 } else {
                     console.log(JLogLevel.INFO," [binary body omitted, content-type: {"+responseBody.contentType()+"}]");

@@ -16,6 +16,8 @@
 package com.github.paohaijiao.executor;
 
 import com.github.paohaijiao.antlr.impl.JAbstractAntlrExecutor;
+import com.github.paohaijiao.banner.JQuickBanner;
+import com.github.paohaijiao.banner.impl.JQuickBannerImpl;
 import com.github.paohaijiao.config.JQuickCurlConfig;
 import com.github.paohaijiao.console.JConsole;
 import com.github.paohaijiao.exception.JAntlrExecutionException;
@@ -70,6 +72,8 @@ public class JQuickCurlExecutor extends JAbstractAntlrExecutor<String, JQuickCur
 
     @Override
     protected JQuickCurlResponseBody parse(Parser parser) throws JAntlrExecutionException {
+        JQuickBanner banner= JQuickBannerImpl.getInstance();
+        banner.printBanner();
         JQuickCurlParser calcParser = (JQuickCurlParser) parser;
         JQuickCurlParser.CurlCommandContext tree = calcParser.curlCommand();
         JQuickCurlCommonVisitor visitor = new JQuickCurlCommonVisitor(this.context,this.config);
