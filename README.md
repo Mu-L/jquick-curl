@@ -1,5 +1,5 @@
 # JQuickCurl - Java HTTP Client Framework Based on Curl
-##  English | [简体中文](./README-CN) 
+##  English | [简体中文](./README_CN) 
 [![Awesome Java](https://img.shields.io/badge/Awesome-Java-ff69b4.svg)](https://github.com/akullpp/awesome-java)
 > Featured in the [Awesome Java](https://github.com/akullpp/awesome-java) curated list — **HTTP Clients** section
 ## 📖 Project Introduction
