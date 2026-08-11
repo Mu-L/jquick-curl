@@ -1,5 +1,5 @@
 # JQuickCurl - 基于Curl的Java HTTP客户端框架
-## [English](./README)| 简体中文 
+## [English](./README.md)| 简体中文 
 [![Awesome Java](https://img.shields.io/badge/Awesome-Java-ff69b4.svg)](https://github.com/akullpp/awesome-java)
 > 已被收录至 [Awesome Java](https://github.com/akullpp/awesome-java) 的 **HTTP Clients** 精选章节
 ## 📖 项目简介
