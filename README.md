@@ -1,881 +1,360 @@
-# JQuickCurl - 基于Curl的Java HTTP客户端框架
-##  简体中文 | [English](./README-EN.md) 
-[![Awesome Java](https://img.shields.io/badge/Awesome-Java-ff69b4.svg)](https://github.com/akullpp/awesome-java)
-> 已被收录至 [Awesome Java](https://github.com/akullpp/awesome-java) 的 **HTTP Clients** 精选章节
+# JQuickCurl
 
-## 🏠 项目归属
->  **JQuickCurl** 现已正式加入 [dromara](https://github.com/dromara) 开源组织，主仓库地址为：
-👉 **[https://github.com/dromara/jquick-curl](https://github.com/dromara/jquick-curl)**
-> 后续所有新特性开发、Issue 跟踪和 Pull Request 都将在此仓库进行。欢迎 Star ⭐、Fork、参与贡献！
+[![GitHub Stars](https://img.shields.io/github/stars/dromara/jquick-curl?style=flat-square)](https://github.com/dromara/jquick-curl/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/dromara/jquick-curl?style=flat-square)](https://github.com/dromara/jquick-curl/network/members)
+[![License](https://img.shields.io/github/license/dromara/jquick-curl?style=flat-square)](https://github.com/dromara/jquick-curl/blob/main/LICENSE)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.paohaijiao/jquick-curl?style=flat-square)](https://central.sonatype.com/artifact/io.github.paohaijiao/jquick-curl)
+[![Awesome Java](https://awesome.re/badge.svg)](https://github.com/akullpp/awesome-java)
 
-## 📖 项目简介
-JQuickCurl 是面向 Java 开发者的高性能、易用 HTTP 客户端框架。它深度适配 Java 8 并发特性，核心优势在于直接将 cURL 命令转化为可执行的 HTTP 请求逻辑—— 无需手动编写 RestTemplate、OkHttp 等底层 HTTP 客户端代码，无需关注请求构建、参数封装、响应解析等繁琐细节。
-只需传入熟悉的 Curl 命令，框架即可自动完成请求转换与执行，让开发者以最直观的方式快速实现 GET、POST、PUT、DELETE 等各类 HTTP 操作，大幅降低网络请求开发成本，同时保证请求效率与稳定性。
+**简体中文** | [English](./README-EN.md)
 
+JQuickCurl 是一款面向 Java 的 curl 命令式 HTTP 客户端框架：把浏览器、Postman 或终端中可复用的原生 curl 命令直接解析为 Java 请求，支持注解与 XML 双配置、变量替换、条件渲染、文件传输、批量执行和动态代理调用。
 
-## 📊 项目状态
+> 归属 [Dromara](https://dromara.org/)，主仓库：[dromara/jquick-curl](https://github.com/dromara/jquick-curl)。
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-5470c6.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Version](https://img.shields.io/badge/Version-1.2.0-91cc75.svg)](https://github.com/paohaijiao/jquick-curl/releases)
-[![Downloads](https://img.shields.io/badge/Downloads-15K/month-fac858.svg)](https://maven-badges.herokuapp.com/maven-central/io.paohaijiao/jquick-curl)
-[![Contributors](https://img.shields.io/badge/Contributors-24-3ba272.svg)](https://github.com/paohaijiao/jquick-curl/graphs/contributors)
-[![Build](https://img.shields.io/badge/Build-Passing-ee6666.svg)](https://github.com/paohaijiao/jquick-curl/actions)
-[![Test Coverage](https://img.shields.io/badge/Coverage-92%25-73c0de.svg)](https://github.com/paohaijiao/jquick-curl)
-[![Issues](https://img.shields.io/badge/Issues-12-9a60b4.svg)](https://github.com/paohaijiao/jquick-curl/issues)
-[![Awesome](https://awesome.re/badge.svg)](https://awesome-java)
-## 🌟 核心标签
-⚡ 高性能 | 🎯 易用 | 🔧 灵活 | 📦 轻量
-## 📖 使用案例专区
+## 目录
 
-> 本专区汇集了 JQuickCurl 在真实项目中的应用案例。
----
+- [核心优势](#核心优势)
+- [适用场景](#适用场景)
+- [快速开始](#快速开始)
+- [核心功能详解](#核心功能详解)
+- [完整使用示例](#完整使用示例)
+- [高级特性](#高级特性)
+- [项目架构设计](#项目架构设计)
+- [更新日志与版本特性](#更新日志与版本特性)
+- [开源协议](#开源协议)
+- [贡献指南](#贡献指南)
+- [项目归属与支持](#项目归属与支持)
+- [Awesome Java](#awesome-java)
 
-## 📋 案例目录
-| 编号 | 项目名称        | 行业 | 业务规模 | 应用场景 |
-|:----:|-------------|:----:|:--------:|----------|
-| 01 | [某市创业担保贷平台] | 金融 | 2万+ 使用用户 | 多政务系统接口集成 |
+## 核心优势
 
-## 📖 目录
-- [✨ 特性介绍](#特性介绍)
-- [🚀 快速开始](#快速开始)
-- [🔧 核心功能](#核心功能)
-  - [HTTP方法支持](#http方法支持)
-  - [文件操作](#文件操作)
-  - [高级特性](#高级特性)
-- [📝 配置方式](#配置方式)
-  - [注解配置](#注解配置)
-  - [XML配置](#xml配置)
-- [🧪 测试指南](#测试指南)
-- [📚 API参考](#api参考)
-- [🔍 常见问题](#常见问题)
-- [🤝 贡献指南](#贡献指南)
-- [📄 许可证](#许可证)
-- [💝 支持我们](#支持我们)
-## 🚀 核心特性
-- cURL风格API: 使用cURL命令语法定义HTTP请求
-- 多协议支持: GET、POST、PUT、DELETE、PATCH、HEAD、OPTIONS、TRACE
-- 文件上传下载: 支持单文件、多文件上传和文件下载
-- 注解驱动: 使用@JCurlCommand注解简化API定义
-- 代理模式: 支持动态代理生成API客户端
-- XML配置: 支持XML方式配置API接口
-- 变量替换: 支持全局变量和参数替换
-- Lambda支持: 提供Lambda表达式的调用方式
-- 拦截器: 支持请求/响应拦截器
-- 批量执行: 支持批量执行cURL命令
+| 对比维度 | JQuickCurl | OkHttp / RestTemplate / HttpClient |
+| --- | --- | --- |
+| 请求表达 | 直接复用原生 curl 命令 | 需要手写 Request、参数、Header 或客户端配置 |
+| 调试协作 | 后端、前端、测试可共享同一条 curl | 常需要在不同表达方式之间转换 |
+| 配置方式 | `@JCurlCommand` 注解 + XML 配置 | 以 Java API、Builder 或 Spring 配置为主 |
+| 动态请求 | 原生命令中使用变量和 XML 条件语法 | 通常需要手动拼装 URL、Body 和条件分支 |
+| API 封装 | 接口 + 动态代理即可调用 | 需要手动封装服务类或模板代码 |
+| 文件与方法 | 覆盖常用 HTTP 方法、multipart、下载 | 能力强，但请求描述与业务代码耦合度更高 |
 
-## 使用指南
-### 基础语法
-```bash
-# 通用格式
-curl [options] [URL]
+核心创新是 **原生 curl 命令解析**、**零手写请求构建代码** 和 **XML 动态条件语法**。JQuickCurl 底层使用 OkHttp 执行网络请求，并通过 ANTLR 解析 curl 语法，不是调用系统中的 curl 进程。
 
-# 示例：GET请求
-curl https://api.example.com/user
-# 示例：带请求头的POST请求
-curl -X POST -H "Content-Type: application/json" -d '{"name":"test"}' https://api.example.com/user
-### 基础选项
-# 请求方法
--X, --request <方法>        # 指定请求方法（GET/POST/PUT/DELETE/PATCH/HEAD/OPTIONS/TRACE）
-# 请求头
--H, --header <请求头>       # 添加HTTP请求头
-# 数据发送（POST/PUT专用）
--d, --data <数据>           # 发送普通数据
---data-ascii <数据>         # 发送ASCII格式数据
---data-binary <数据>        # 发送二进制数据
---data-raw <数据>           # 发送未经处理的原始数据
---data-urlencode <数据>     # 发送URL编码的表单数据
-# 认证相关
--u, --user <用户:密码>      # 服务器用户名和密码
-# 重定向
--L, --location              # 跟随重定向
---max-redirs <次数>         # 最大重定向次数
-# 输出控制
--o, --output <文件>         # 将输出写入文件而非标准输出
-# 文件/表单上传
--F, --form <名称=内容>      # 指定多部分表单数据
-# 代理相关
--x, --proxy <[协议://]主机[:端口]>  # 使用HTTP/HTTPS代理
---socks5-hostname <主机[:端口]>     # SOCKS5代理
-# 协议/安全
---http2                     # 使用HTTP/2协议
--k, --insecure              # 允许不安全的服务器连接
-```
+## 适用场景
 
-## 📦 快速开始
-### 1. 添加依赖
+- 将 Postman、浏览器开发者工具或接口文档中的 curl 快速迁移到 Java。
+- 微服务、支付、数据采集、第三方开放平台等大量 HTTP 集成场景。
+- 需要把请求定义与 Java 业务代码分离的配置化 API 客户端。
+- 需要统一处理认证变量、环境域名、条件 Header 和请求体的项目。
+- 文件上传、批量接口调用、文件下载和接口自动化测试。
+
+## 快速开始
+
+### Maven 依赖
+
+当前项目版本为 `2.1.0`：
+
 ```xml
 <dependency>
     <groupId>io.github.paohaijiao</groupId>
     <artifactId>jquick-curl</artifactId>
-    <version>${最新版本}</version>
+    <version>2.1.0</version>
 </dependency>
 ```
-## 2. 基础使用
-### 方式一:注解方式
-> 适合简单、零散的 API 调用，配置与代码紧密关联：须定义好该接口的入参和出参
-> 特点：通过 @JCurlCommand 注解直接在接口方法上声明 curl 命令，适合快速开发和调试。
-- **声明一个接口**，使用 @JCurlCommand 注解标注 curl 命令，参数通过 ${变量名} 占位符传递。
-```java
-    import java.util.List;
-    public interface UserService {
-        @JCurlCommand("curl -u ${user}:${password} https://api.github.com/user\n -X GET")
-        JGithubAuth retriveUser(JQuickCurlReq req);
-    }
-```
-> 发起调用
-> 使用 JCurlInvoker.createProxy() **创建代理对象**，通过 JQuickCurlReq 传递参数。
-> 也可使用JCurlInvoker.invoke的**Lamda（::）** 方式进行rest接口的调用
+
+### 最简示例
+
+`@JCurlCommand` 用于在接口方法上声明 curl。代理对象负责解析、执行并把响应转换为返回类型。
 
 ```java
-    @Test
-    public  void retriveUser() throws Exception {
-        ApiService api = JCurlInvoker.createProxy(ApiService.class);
-        JQuickCurlReq req = new JQuickCurlReq();
-        req.put("user", "1234567@qq.com");
-        req.put("password", "123456");
-        JGithubAuth result = api.retriveUser(req);
-        System.out.println(result);
-    }
-    @Test
-    public  void testMethod() throws Exception {
-        JQuickCurlReq req = new JQuickCurlReq();
-        JUser result = JCurlInvoker.invoke(UserServiceImpl::getUserById, req,JUser.class);
-        System.out.println(result);
-    }
-```
+import com.github.paohaijiao.anno.JCurlCommand;
+import com.github.paohaijiao.domain.req.JQuickCurlReq;
+import com.github.paohaijiao.executor.JCurlInvoker;
 
-### 2.2 方式二:xml 配置方式
-> 特点：将 curl 命令集中定义在 XML 文件中，接口只声明方法签名，实现配置与代码分离。
-> 适合统一管理多个 API，配置与代码分离，便于维护
-> 第一步：编写 XML 配置文件（apis.xml）
-> 在 resources 目录下创建 XML 文件，使用 **<curl> 标签定义每个 API**。
-```xml
-    <?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE curls PUBLIC "-//PAOHAIJIAO//DTD API CURL 1.0//EN"
-            "classpath:paohaijiao/dtd/Jquick-curl.dtd">
-    <!-- 
-      XML配置说明：
-      - namespace：绑定对应的Java接口全类名
-      - curl节点：每个节点对应一个接口方法
-        - name：方法名（需与Java接口方法名一致）
-        - returnClass：方法返回值类型（全类名）
-     -->
-    <curls namespace="com.github.paohaijiao.test.xml.UserApi">
-        <curl name="users" returnClass="com.github.paohaijiao.test.model.JUser">
-            curl -X POST http://localhost:8080/api/users/createUser \
-            -H "Content-Type: application/json" \
-            -d '{"name":"John Doe","email":"john@example.com"}'
-        </curl>
-    </curls>
-```
-> 定义一个接口
-> 接口中的方法名必须与 XML 中 **<curl> 标签的 name 属性** 一一对应。
-> 配合 @Param 注解**传递动态参数**
-```java
-    public interface UserApi {
-        JUser users(@Param("参数1") String 参数1, @Param("参数2") String 参数2);
-    }
-```
-> 发起调用
-> 通过工厂模式加载 XML 配置，**创建 API 代理对象**。
-```java
-    @Test
-    public  void users() throws Exception {
-        JQuickCurlReq req = new JQuickCurlReq();
-        req.put("user", "123456@qq.com");
-        req.put("password", "123456");
-        JQuickParseHandler parser = new JQuickCurlXmlParseFactory();
-        JQuickFactory factory = new JQuickXmlFactory(parser,"apis.xml");
-        UserApi userApi = factory.createApi(UserApi.class);
-        JUser user=userApi.users(req);
-        System.out.println(user);
-    }
-```
+public interface EchoApi {
+    @JCurlCommand("curl -X GET https://httpbin.org/get")
+    String get(JQuickCurlReq request);
+}
 
-## 🔧 详细功能示例
-###  方式1: 注解方式
-```java
-
-public interface UserService {
-    /**
-     * 获取用户列表
-     * GET请求：无请求体，直接通过URL获取资源
-     */
-    @JCurlCommand("curl -X GET --location 'http://localhost:8080/api/users/all'")
-    List<JUser> all(JQuickCurlReq req);
-    /**
-     * 根据用户ID查询单个用户信息
-     * GET请求：无请求体，直接通过URL获取资源
-     */
-    @JCurlCommand("curl -X GET http://localhost:8080/api/users/1")
-    JUser getUserById(JQuickCurlReq req);
-    /**
-     * 创建新用户
-     * POST请求：携带JSON格式请求体，指定Content-Type为application/json
-     */
-    @JCurlCommand("curl -X POST http://localhost:8080/api/users/createUser \\\n" +
-            "-H \"Content-Type: application/json\" \\\n" +
-            "-d '{\"name\":\"John Doe\",\"email\":\"john@example.com\"}'")
-    JUser users(JQuickCurlReq req);
-    /**
-     * 全量更新用户信息
-     * PUT请求：替换指定ID的完整用户信息，需传递全部字段
-     */
-    @JCurlCommand("curl -X PUT http://localhost:8080/api/users/1 \\\n" +
-            "-H \"Content-Type: application/json\" \\\n" +
-            "-d '{\"name\":\"John Doe Updated\",\"email\":\"john.updated@example.com\"}'")
-    JUser usersPut(JQuickCurlReq req);
-    /**
-     * PATCH请求：局部更新用户信息（仅修改需要变更的字段）
-     */
-    @JCurlCommand("curl -X PATCH http://localhost:8080/api/users/1 \\\n" +
-            "-H \"Content-Type: application/json\" \\\n" +
-            "-d '{\"name\":\"John Doe Patched\"}'")
-    JUser usersPatch(JQuickCurlReq req);
-    /**
-     * 删除指定ID的用户
-     * DELETE请求：无返回值（Void
-     */
-    @JCurlCommand("curl -X DELETE http://localhost:8080/api/users/1")
-    Void usersDelete(JQuickCurlReq req);
-    /**
-     * HEAD请求：仅获取响应头信息（-I参数），无响应体
-     */
-    @JCurlCommand("curl  -X HEAD -I http://localhost:8080/api/users/1")
-    Void usersHead(JQuickCurlReq req);
-    /**
-     * OPTIONS请求：获取服务器支持的HTTP方法列表
-     */
-    @JCurlCommand("curl -X OPTIONS http://localhost:8080/api/users/1")
-    JResult usersOptions(JQuickCurlReq req);
-    /**
-     * TRACE请求：回显服务器收到的请求，用于调试
-     */
-    @JCurlCommand("curl -X TRACE http://localhost:8080/api/users/trace \\\n" +
-            "-H \"Content-Type: text/plain\" \\\n" +
-            "-d \"This is a trace request body\"")
-    String usersTrace(JQuickCurlReq req);
-    /**
-     * 上传单个文件
-     * -F参数：指定multipart/form-data格式，@符号后为本地文件路径
-     */
-    @JCurlCommand("curl -X POST http://localhost:8080/api/users/upload \\\n" +
-            "-F \"file=@D:\\test\\test.txt\"")
-    String upload(JQuickCurlReq req);
-    /**
-     * 批量上传多个文件
-     * 多个-F参数：同名参数（files）传递多个文件，服务端接收文件列表
-     */
-    @JCurlCommand("curl -X POST http://localhost:8080/api/users/upload-multiple \\\n" +
-            "-F \"files=@D:\\test\\test.txt\"-F \"files=@D:\\test\\test1.txt\"")
-    String upload1(JQuickCurlReq req);
-    /**
-     * 下载文件到指定路径
-     * --output参数：将响应内容写入本地文件，返回字节数组（byte[]）便于处理
-     */
-    @JCurlCommand("curl -X GET http://localhost:8080/api/users/download/test.txt \\\n" +
-            "--output 'd://test//download.txt'")
-    byte[] download(JQuickCurlReq req);
-    /**
-     * 上传文件并携带额外表单参数
-     * 混合-F参数：既有普通表单字段（userId/username），也有文件字段（file）
-     */
-    @JCurlCommand("curl -X POST http://localhost:8080/api/users/upload-with-params \\\n" +
-            "-F \"userId=123\" \\\n" +
-            "-F \"username=john\" \\\n" +
-            "-F \"file=@D:\\test\\test.txt\"")
-    String uploadWithPostParams(JQuickCurlReq req);
+class Application {
+    public static void main(String[] args) throws Exception {
+        EchoApi api = JCurlInvoker.createProxy(EchoApi.class);
+        String response = api.get(new JQuickCurlReq());
+        System.out.println(response);
+    }
 }
 ```
 
-```string
-    @Test
-    public  void retriveUser() throws Exception {
-        ApiService api = JCurlInvoker.createProxy(ApiService.class);
-        JQuickCurlReq req = new JQuickCurlReq();
-        req.put("user", "xsasaxsa@qq.com");
-        req.put("password", "xasxsa");
-        JGithubAuth result = api.retriveUser(req);
-        System.out.println(result);
-    }
-    @Test
-    public  void all() throws Exception {
-        UserService api = JCurlInvoker.createProxy(UserService.class);
-        JQuickCurlReq req = new JQuickCurlReq();
-        req.put("user", "xsasaxsa@qq.com");
-        req.put("password", "xasxsa");
-        JUser result = api.getUserById(req);
-        System.out.println(result);
-    }
-    @Test
-    public  void users() throws Exception {
-        UserService api = JCurlInvoker.createProxy(UserService.class);
-        JQuickCurlReq req = new JQuickCurlReq();
-        req.put("user", "xsasaxsa@qq.com");
-        req.put("password", "xasxsa");
-        JUser result = api.users(req);
-        System.out.println(result);
-    }
-    @Test
-    public  void usersPut() throws Exception {
-        UserService api = JCurlInvoker.createProxy(UserService.class);
-        JQuickCurlReq req = new JQuickCurlReq();
-        req.put("user", "xsasaxsa@qq.com");
-        req.put("password", "xasxsa");
-        JUser result = api.usersPut(req);
-        System.out.println(result);
-    }
+## 核心功能详解
 
-    @Test
-    public  void usersPatch() throws Exception {
-        UserService api = JCurlInvoker.createProxy(UserService.class);
-        JQuickCurlReq req = new JQuickCurlReq();
-        req.put("user", "xsasaxsa@qq.com");
-        req.put("password", "xasxsa");
-        JUser result = api.usersPatch(req);
-        System.out.println(result);
-    }
+### 1. 注解方式
 
-    @Test
-    public  void usersDelete() throws Exception {
-        UserService api = JCurlInvoker.createProxy(UserService.class);
-        JQuickCurlReq req = new JQuickCurlReq();
-        api.usersDelete(req);
-        System.out.println();
-    }
-    @Test
-    public  void head() throws Exception {
-        UserService api = JCurlInvoker.createProxy(UserService.class);
-        JQuickCurlReq req = new JQuickCurlReq();
-        api.usersHead(req);
-        System.out.println();
-    }
-    @Test
-    public  void usersOptions() throws Exception {
-        UserService api = JCurlInvoker.createProxy(UserService.class);
-        JQuickCurlReq req = new JQuickCurlReq();
-        JResult jResult=api.usersOptions(req);
-        System.out.println(jResult);
-    }
-    @Test
-    public  void usersTrace() throws Exception {
-        UserService api = JCurlInvoker.createProxy(UserService.class);
-        JQuickCurlReq req = new JQuickCurlReq();
-        String jResult=api.usersTrace(req);
-        System.out.println(jResult);
-    }
-    @Test
-    public  void upload() throws Exception {
-        UserService api = JCurlInvoker.createProxy(UserService.class);
-        JQuickCurlReq req = new JQuickCurlReq();
-        req.put("user", "xsasaxsa@qq.com");
-        req.put("password", "xasxsa");
-        String jResult=api.upload(req);
-        System.out.println(jResult);
-    }
-    @Test
-    public  void upload1() throws Exception {
-        UserService api = JCurlInvoker.createProxy(UserService.class);
-        JQuickCurlReq req = new JQuickCurlReq();
-        req.put("user", "xsasaxsa@qq.com");
-        req.put("password", "xasxsa");
-        String jResult=api.upload1(req);
-        System.out.println(jResult);
-    }
-    @Test
-    public  void downloadByte() throws Exception {
-        UserService api = JCurlInvoker.createProxy(UserService.class);
-        JQuickCurlReq req = new JQuickCurlReq();
-        req.put("user", "xsasaxsa@qq.com");
-        req.put("password", "xasxsa");
-        byte[] bytes=api.download(req);
-        Path path = Paths.get("d://test/xx1.txt");
-        Files.write(path, bytes, StandardOpenOption.CREATE);
-        System.out.println("jResult");
-    }
-    @Test
-    public  void uploadWithPostParams() throws Exception {
-        UserService api = JCurlInvoker.createProxy(UserService.class);
-        JQuickCurlReq req = new JQuickCurlReq();
-        String bytes=api.uploadWithPostParams(req);
-        System.out.println(bytes);
-    }
+适合请求数量较少、请求定义与代码紧密关联的场景：
+
+```java
+public interface UserApi {
+    @JCurlCommand("curl -X GET 'https://api.example.com/users/${id}'")
+    String getUser(JQuickCurlReq request);
+}
+
+JQuickCurlReq request = new JQuickCurlReq();
+request.put("id", 1001);
+UserApi api = JCurlInvoker.createProxy(UserApi.class);
+String body = api.getUser(request);
 ```
-## XML详细配置方式
-### 1. 定义XML配置文件 (apis.xml)
+
+`@JCurlCommand` 还支持 `execute`、`expectedStatus`、`expectedBusinessStatus` 和 `validationScript` 等执行与校验属性。
+
+### 2. XML 配置方式
+
+适合集中维护大量接口，将 curl、返回类型和 Java 接口解耦。XML 使用项目内置 DTD：
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE curls PUBLIC "-//PAOHAIJIAO//DTD API CURL 1.0//EN"
-            "classpath:paohaijiao/dtd/Jquick-curl.dtd">
-    <curls namespace="com.github.paohaijiao.test.xml.UserApi">
-        <curl name="all" returnClass="java.util.List">
-            curl -X GET --location 'http://localhost:8080/api/users/all'
-        </curl>
-    
-        <curl name="getUserById" returnClass="com.github.paohaijiao.test.model.JUser">
-            curl -X GET http://localhost:8080/api/users/1
-        </curl>
-        <curl name="getUserByIdVariable" returnClass="com.github.paohaijiao.test.model.JUser">
-            curl -X GET #{host} \
-            <if test="a==1"> -H "Content-Type: application/json" </if>
-        </curl>
-    
-        <curl name="users" returnClass="com.github.paohaijiao.test.model.JUser">
-            curl -X POST http://localhost:8080/api/users/createUser \
-            -H "Content-Type: application/json" \
-            -d '{"name":"John Doe","email":"john@example.com"}'
-        </curl>
-        <curl name="usersByVariable" returnClass="com.github.paohaijiao.test.model.JUser">
-            curl -X POST http://localhost:8080/api/users/createUser \
-            -H "Content-Type: application/json" \
-            -d '{"name":#{name},"email":#{email}}'
-        </curl>
-    
-        <curl name="usersPut" returnClass="com.github.paohaijiao.test.model.JUser">
-            curl -X PUT http://localhost:8080/api/users/1 \
-            -H "Content-Type: application/json" \
-            -d '{"name":"John Doe Updated","email":"john.updated@example.com"}'
-        </curl>
-    
-        <curl name="usersPatch" returnClass="com.github.paohaijiao.test.model.JUser">
-            curl -X PATCH http://localhost:8080/api/users/1 \
-            -H "Content-Type: application/json" \
-            -d '{"name":"John Doe Patched"}'
-        </curl>
-    
-        <curl name="usersDelete" returnClass="java.lang.Void">
-            curl -X DELETE http://localhost:8080/api/users/1
-        </curl>
-    
-        <curl name="usersHead" returnClass="java.lang.Void">
-            curl -X HEAD -I http://localhost:8080/api/users/1
-        </curl>
-    
-        <curl name="usersOptions" returnClass="com.github.paohaijiao.model.JResult">
-            curl -X OPTIONS http://localhost:8080/api/users/1
-        </curl>
-    
-        <curl name="usersTrace" returnClass="java.lang.String">
-            curl -X TRACE http://localhost:8080/api/users/trace \
-            -H "Content-Type: text/plain" \
-            -d "This is a trace request body"
-        </curl>
-    
-        <curl name="upload" returnClass="java.lang.String">
-            curl -X POST http://localhost:8080/api/users/upload \
-            -F "file=@D:\test\pie.xlsx"
-        </curl>
-    
-        <curl name="upload1" returnClass="java.lang.String">
-            curl -X POST http://localhost:8080/api/users/upload-multiple \
-            -F "files=@D:\test\pie.xlsx" \
-            -F "files=@D:\test\pie2.xlsx"
-        </curl>
-    
-        <curl name="download" returnClass="byte[]">
-            curl -X GET http://localhost:8080/api/users/download/pie.xlsx \
-            -H "Content-Type: application/octet-stream" \
-            --output 'd://test//piett.xlsx'
-        </curl>
-    
-        <curl name="uploadWithPostParams" returnClass="java.lang.String">
-            curl -X POST http://localhost:8080/api/users/upload-with-params \
-            -F "userId=123" \
-            -F "username=john" \
-            -F "file=@D:\test\pie.xlsx"
-        </curl>
+<!DOCTYPE curls PUBLIC "-//PAOHAIJIAO//DTD API CURL 1.0//EN"
+        "classpath:paohaijiao/dtd/Jquick-curl.dtd">
+<curls namespace="com.example.UserApi">
+    <curl name="getUser" returnClass="java.lang.String">
+        curl -X GET https://api.example.com/users/#{id}
+    </curl>
 </curls>
 ```
-### 2.  定义 Java 接口（与 XML 配置绑定）
+
+Java 接口的方法名必须与 `<curl name="...">` 一致：
+
 ```java
+import com.github.paohaijiao.domain.req.JQuickCurlReq;
 
 public interface UserApi {
-
-    List<JUser> all(JQuickCurlReq req);
-
-    JUser getUserById(JQuickCurlReq req);
-
-    JUser getUserByIdVariable(@Param("host")String host,@Param("a") int a);
-
-    JUser users(JQuickCurlReq req);
-
-    JUser usersByVariable(@Param("name")String name,@Param("email")String email);
-
-    JUser usersPut(JQuickCurlReq req);
-
-    JUser usersPatch(JQuickCurlReq req);
-
-    Void usersDelete(JQuickCurlReq req);
-
-    Void usersHead(JQuickCurlReq req);
-
-    void usersOptions(JQuickCurlReq req);
-
-    String usersTrace(JQuickCurlReq req);
-
-    String upload(JQuickCurlReq req);
-
-    String upload1(JQuickCurlReq req);
-
-    byte[] download(JQuickCurlReq req);
-
-    String uploadWithPostParams(JQuickCurlReq req);
+    String getUser(JQuickCurlReq request);
 }
 ```
-### 3.使用工厂创建实例并调用
+
+加载 XML 并创建代理：
+
 ```java
-     @Test
-    public  void all1() throws Exception {
-        JQuickCurlReq req = new JQuickCurlReq();
-        req.put("user", "xsaxsa@qq.com");
-        req.put("password", "zaZAzaZA");
-        JQuickParseHandler parser = new JQuickCurlXmlParseFactory();
-        JQuickFactory factory = new JQuickXmlFactory(parser,"apis.xml");
-        System.out.println(factory);
-        UserApi userApi = factory.createApi(UserApi.class);
-        List<JUser> list =userApi.all(req);
-        System.out.println(list);
-    }
-    @Test
-    public  void testMethod() throws Exception {
-        JQuickCurlReq req = new JQuickCurlReq();
-        JQuickParseHandler parser = new JQuickCurlXmlParseFactory();
-        JQuickFactory factory = new JQuickXmlFactory(parser,"apis.xml");
-        System.out.println(factory);
-        UserApi userApi = factory.createApi(UserApi.class);
-        JUser list =userApi.getUserById(req);
-        System.out.println(list);
-    }
-    @Test
-    public  void getUserByIdVariable() throws Exception {
-        JQuickCurlReq req = new JQuickCurlReq();
-        JQuickParseHandler parser = new JQuickCurlXmlParseFactory();
-        JQuickFactory factory = new JQuickXmlFactory(parser,"apis.xml");
-        System.out.println(factory);
-        UserApi userApi = factory.createApi(UserApi.class);
-        JUser list =userApi.getUserByIdVariable("http://localhost:8080/api/users/1",1);
-        System.out.println(list);
-    }
-    @Test
-    public  void users() throws Exception {
-        JQuickCurlReq req = new JQuickCurlReq();
-        req.put("user", "xsaxsa@qq.com");
-        req.put("password", "zaZAzaZA");
-        JQuickParseHandler parser = new JQuickCurlXmlParseFactory();
-        JQuickFactory factory = new JQuickXmlFactory(parser,"apis.xml");
-        UserApi userApi = factory.createApi(UserApi.class);
-        System.out.println(factory);
-        System.out.println(userApi.users(req));
-    }
-    @Test
-    public  void usersPut() throws Exception {
-        JQuickCurlReq req = new JQuickCurlReq();
-        req.put("user", "xsaxsa@qq.com");
-        req.put("password", "zaZAzaZA");
-        JQuickParseHandler parser = new JQuickCurlXmlParseFactory();
-        JQuickFactory factory = new JQuickXmlFactory(parser,"apis.xml");
-        UserApi userApi = factory.createApi(UserApi.class);
-        System.out.println(userApi.usersPut(req));
-    }
-    @Test
-    public  void usersPatch() throws Exception {
-        JQuickCurlReq req = new JQuickCurlReq();
-        req.put("user", "xsaxsa@qq.com");
-        req.put("password", "zaZAzaZA");
-        JQuickParseHandler parser = new JQuickCurlXmlParseFactory();
-        JQuickFactory factory = new JQuickXmlFactory(parser,"apis.xml");
-        UserApi userApi = factory.createApi(UserApi.class);
-        System.out.println(userApi.usersPatch(req));
-    }
-    @Test
-    public  void usersDelete() throws Exception {
-        JQuickCurlReq req = new JQuickCurlReq();
-        req.put("user", "xsaxsa@qq.com");
-        req.put("password", "zaZAzaZA");
-        JQuickParseHandler parser = new JQuickCurlXmlParseFactory();
-        JQuickFactory factory = new JQuickXmlFactory(parser,"apis.xml");
-        UserApi userApi = factory.createApi(UserApi.class);
-        System.out.println(userApi.usersDelete(req));
-    }
-    @Test
-    public  void usersHead() throws Exception {
-        JQuickCurlReq req = new JQuickCurlReq();
-        JQuickParseHandler parser = new JQuickCurlXmlParseFactory();
-        JQuickFactory factory = new JQuickXmlFactory(parser,"apis.xml");
-        UserApi userApi = factory.createApi(UserApi.class);
-        System.out.println(userApi.usersHead(req));
-    }
-    @Test
-    public  void usersOptions() throws Exception {
-        JQuickCurlReq req = new JQuickCurlReq();
-        req.put("user", "xsaxsa@qq.com");
-        req.put("password", "zaZAzaZA");
-        JQuickParseHandler parser = new JQuickCurlXmlParseFactory();
-        JQuickFactory factory = new JQuickXmlFactory(parser,"apis.xml");
-        UserApi userApi = factory.createApi(UserApi.class);
-        userApi.usersOptions(req);
-        System.out.println();
-    }
-    @Test
-    public  void usersByVariable() throws Exception {
-        JQuickParseHandler parser = new JQuickCurlXmlParseFactory();
-        JQuickFactory factory = new JQuickXmlFactory(parser,"apis.xml");
-        UserApi userApi = factory.createApi(UserApi.class);
-        System.out.println(userApi.usersByVariable("\"张三\"","\"aa@qq.com\""));
-    }
-    @Test
-    public  void upload() throws Exception {
-        JQuickCurlReq req = new JQuickCurlReq();
-        JQuickParseHandler parser = new JQuickCurlXmlParseFactory();
-        JQuickFactory factory = new JQuickXmlFactory(parser,"apis.xml");
-        UserApi userApi = factory.createApi(UserApi.class);
-        System.out.println(userApi.upload(req));
-    }
-    @Test
-    public  void upload1() throws Exception {
-        JQuickCurlReq req = new JQuickCurlReq();
-        req.put("user", "xsaxsa@qq.com");
-        req.put("password", "zaZAzaZA");
-        JQuickParseHandler parser = new JQuickCurlXmlParseFactory();
-        JQuickFactory factory = new JQuickXmlFactory(parser,"apis.xml");
-        UserApi userApi = factory.createApi(UserApi.class);
-        System.out.println(userApi.upload1(req));
-    }
-    @Test
-    public  void download() throws Exception {
-        JQuickCurlReq req = new JQuickCurlReq();
-        req.put("user", "xsaxsa@qq.com");
-        req.put("password", "zaZAzaZA");
-        JQuickParseHandler parser = new JQuickCurlXmlParseFactory();
-        JQuickFactory factory = new JQuickXmlFactory(parser,"apis.xml");
-        UserApi userApi = factory.createApi(UserApi.class);
-        byte[] r=userApi.download(req);
-        Path path = Paths.get("d://test/pief.xlsx");
-        Files.write(path, r, StandardOpenOption.CREATE);
-    }
-    @Test
-    public  void uploadWithPostParams() throws Exception {
-        JQuickCurlReq req = new JQuickCurlReq();
-        req.put("user", "xsaxsa@qq.com");
-        req.put("password", "zaZAzaZA");
-        JQuickParseHandler parser = new JQuickCurlXmlParseFactory();
-        JQuickFactory factory = new JQuickXmlFactory(parser,"apis.xml");
-        UserApi userApi = factory.createApi(UserApi.class);
-        String r1=userApi.uploadWithPostParams(req);
-        System.out.println(r1);
-    }
+import com.github.paohaijiao.xml.JQuickCurlXmlParseFactory;
+import com.github.paohaijiao.xml.factory.JQuickXmlFactory;
+import com.github.paohaijiao.xml.handler.JQuickParseHandler;
+
+JQuickParseHandler parser = new JQuickCurlXmlParseFactory();
+JQuickXmlFactory factory = new JQuickXmlFactory(parser, "apis.xml");
+UserApi api = factory.createApi(UserApi.class);
 ```
-## 🛠 高级功能
-### 1. 批量执行
+
+### 3. 变量替换
+
+- 注解代理结合 `JQuickCurlReq` 时，使用 `${name}` 从请求参数容器取值。
+- XML 代理支持上下文变量，常用 `#{name}`，并可与方法参数或请求上下文绑定。
+
 ```java
-/**
- * 批量执行curl命令
- * JQuickCurlBatchRunner：批量执行器，支持一次性执行多个curl命令
- * runCurlCommands：执行指定的批量命令类，统一返回JResult类型的结果列表
- */
-public static void main(String[] args) throws Exception {
-    JQuickCurlBatchRunner batch= new JQuickCurlBatchRunner();
-    List<JQuickCurlResponseBody> list=batch.runCurlCommands(new JCurlBatchCommandTest(),JQuickCurlResponseBody.class);
-    System.out.println(list);
+public interface AuthApi {
+    @JCurlCommand("curl -u ${user}:${password} https://api.example.com/me")
+    String currentUser(JQuickCurlReq request);
+}
+
+JQuickCurlReq request = new JQuickCurlReq();
+request.put("user", "demo");
+request.put("password", "secret");
+String result = JCurlInvoker.createProxy(AuthApi.class).currentUser(request);
+```
+
+请勿把真实密码、Token 或私钥提交到源码和 XML；建议在运行时注入变量。
+
+### 4. XML 条件语法
+
+XML curl 文本中可使用 `<if test="...">...</if>` 条件片段，条件成立时才渲染其中的 Header、参数或命令选项：
+
+```xml
+<curl name="search" returnClass="java.lang.String">
+    curl -X GET #{host}/search
+    <if test="withTrace == true"> -H "X-Trace: #{traceId}" </if>
+</curl>
+```
+
+条件表达式应使用 XML 可解析的属性名和上下文变量。复杂条件建议拆分为多个 `<if>`，保持请求定义可读。
+
+### 5. 文件上传与下载
+
+- `-F "file=@/path/to/file"`：单文件上传。
+- 多个 `-F`：同名字段上传多个文件或混合普通表单字段。
+- `--output` / `-o`：执行器将响应字节写入指定文件；Java 返回值也可使用 `byte[]`。
+
+### 6. 批量请求
+
+给同一个类中的多个无参方法标注 `@JCurlCommand`，即可通过 `JQuickCurlBatchRunner` 批量执行：
+
+```java
+public class BatchCommands {
+    @JCurlCommand("curl -X GET https://httpbin.org/get")
+    public String first() { return null; }
+
+    @JCurlCommand("curl -X GET https://httpbin.org/uuid")
+    public String second() { return null; }
+}
+
+JQuickCurlBatchRunner runner = new JQuickCurlBatchRunner();
+List<JQuickCurlResponseBody> results = runner.runCurlCommands(
+        new BatchCommands(), JQuickCurlResponseBody.class);
+```
+
+### 7. 动态代理与 Lambda/方法引用调用
+
+注解接口通过 `JCurlInvoker.createProxy` 调用；已有带 `@JCurlCommand` 的方法也可以使用 `JCurlInvoker.invoke` 和方法引用执行，并指定返回类型。
+
+## 完整使用示例
+
+下面的接口覆盖 GET、POST、PUT、PATCH、DELETE、HEAD、OPTIONS、TRACE、文件上传、文件下载和混合表单参数。示例地址仅用于演示，请替换为实际服务地址。
+
+```java
+import com.github.paohaijiao.anno.JCurlCommand;
+import com.github.paohaijiao.domain.req.JQuickCurlReq;
+
+public interface CompleteApi {
+    @JCurlCommand("curl -X GET https://api.example.com/users")
+    String get(JQuickCurlReq request);
+
+    @JCurlCommand("curl -X POST https://api.example.com/users -H 'Content-Type: application/json' -d '{\"name\":\"Ada\"}'")
+    String post(JQuickCurlReq request);
+
+    @JCurlCommand("curl -X PUT https://api.example.com/users/1 -H 'Content-Type: application/json' -d '{\"name\":\"Ada Lovelace\"}'")
+    String put(JQuickCurlReq request);
+
+    @JCurlCommand("curl -X PATCH https://api.example.com/users/1 -H 'Content-Type: application/json' -d '{\"active\":true}'")
+    String patch(JQuickCurlReq request);
+
+    @JCurlCommand("curl -X DELETE https://api.example.com/users/1")
+    Void delete(JQuickCurlReq request);
+
+    @JCurlCommand("curl -X HEAD https://api.example.com/users/1")
+    Void head(JQuickCurlReq request);
+
+    @JCurlCommand("curl -X OPTIONS https://api.example.com/users/1")
+    String options(JQuickCurlReq request);
+
+    @JCurlCommand("curl -X TRACE https://api.example.com/trace -H 'Content-Type: text/plain' -d 'trace'")
+    String trace(JQuickCurlReq request);
+
+    @JCurlCommand("curl -X POST https://api.example.com/files -F 'file=@./example.txt'")
+    String upload(JQuickCurlReq request);
+
+    @JCurlCommand("curl -X GET https://api.example.com/files/example.txt --output './download/example.txt'")
+    byte[] download(JQuickCurlReq request);
+
+    @JCurlCommand("curl -X POST https://api.example.com/import -F 'userId=1001' -F 'description=example' -F 'file=@./example.txt'")
+    String uploadWithForm(JQuickCurlReq request);
 }
 ```
-### 2. 全局变量支持
+
+调用方式：
+
 ```java
-/**
-* 命令中使用${变量名}占位符，运行时从JQuickCurlReq中取值替换
-* 适用场景：通用配置（如认证信息、基础域名），避免硬编码
-  */
-    public interface ApiService {
-        // 调用示例（${字段名} 字段级别）
-        @JCurlCommand("curl -u ${user}:${password} https://api.github.com/user -X GET")
-        JGithubAuth retriveUser(JQuickCurlReq req);
-    }
-    @Test
-    public  void retriveUser() throws Exception {
-        ApiService api = JCurlInvoker.createProxy(ApiService.class);
-        JQuickCurlReq req = new JQuickCurlReq();
-        // 给占位符${user}/${password}赋值
-        req.put("user", "xsasaxsa@qq.com");
-        req.put("password", "xasxsa");
-        // 执行请求，框架自动替换变量
-        JGithubAuth result = api.retriveUser(req);
-    }
+CompleteApi api = JCurlInvoker.createProxy(CompleteApi.class);
+JQuickCurlReq request = new JQuickCurlReq();
+System.out.println(api.get(request));
+System.out.println(api.post(request));
+byte[] file = api.download(request);
 ```
-### 3. 参数化接口方法
+
+## 高级特性
+
+### 超时、重试、重定向与连接池
+
+`JQuickCurlConfig` 是全局配置单例，支持超时、连接池、失败重试、重定向和拦截器配置：
+
 ```java
-    /**
-    * 接口方法参数绑定（#{参数名}占位符 + @Param注解）
-    * 适用场景：动态拼接请求体/URL，直接使用方法入参，无需通过JQuickCurlReq传递
-    * 注意：占位符格式为#{参数名}，需与@Param注解的value一致
-      */
-    public interface ApiService {
-        @JCurlCommand("curl -X POST http://localhost:8080/api/users/createUser \\\n" +
-                "-H \"Content-Type: application/json\" \\\n" +
-                "-d '{\"name\":#{name},\"email\":#{email}}'")
-        JUser usersByVariable(@Param("name") String name, @Param("email") String email);
-    }
-    // 调用示例（直接传参（#{字段名}），更符合Java接口调用习惯）
-    @Test
-    public  void retriveUser() throws Exception {
-        UserService api = JCurlInvoker.createProxy(UserService.class);
-        JUser user = api.usersByVariable("John Doe", "john@example.com");
-    }
+import com.github.paohaijiao.config.JQuickCurlConfig;
+import java.util.concurrent.TimeUnit;
+
+JQuickCurlConfig.getInstance()
+        .connectTimeout(3, TimeUnit.SECONDS)
+        .readTimeout(10, TimeUnit.SECONDS)
+        .writeTimeout(10, TimeUnit.SECONDS)
+        .maxRetryCount(2)
+        .followRedirects(true);
 ```
-### 4. 拦截器
-### 4. 请求/响应拦截器
+
+方法级别也可使用 `@JTimeout(connect = ..., read = ..., write = ...)` 覆盖超时设置。
+
+### 拦截器
+
+拦截器采用 OkHttp `Interceptor`，可统一记录日志、注入请求头或处理响应：
+
 ```java
-@Slf4j
-public class CustomInterceptor implements Interceptor {
+import com.github.paohaijiao.config.JQuickCurlConfig;
+import okhttp3.Interceptor;
 
-   private static final Charset UTF8 = StandardCharsets.UTF_8;
+Interceptor auth = chain -> chain.proceed(
+        chain.request().newBuilder()
+                .addHeader("Authorization", "Bearer " + System.getenv("API_TOKEN"))
+                .build());
 
-   private final JCurlLevelLog level;
-
-   public JLoggingInterceptor() {
-      this(JCurlLevelLog.ALL);
-   }
-
-   public JLoggingInterceptor(JCurlLevelLog level) {
-      this.level = level;
-   }
-
-   @Override
-   public Response intercept(Chain chain) throws IOException {
-      Request request = chain.request();
-      // 示例：统一添加Token请求头
-      // request.addHeader("Authorization", "Bearer " + getToken());
-      Response response;
-      try {
-         response = chain.proceed(request);
-      } catch (Exception e) {
-         log.error("<-- HTTP FAILED: " + e);
-         throw e;
-      }
-      // 示例：统一添加响应
-      return response;
-   }
-    @Override
-    public void init()  {
-        // 全局配置拦截器（生效于所有请求）
-        JQuickCurlConfig config = JQuickCurlConfig.getInstance();
-        // 添加自定义拦截器（支持添加多个，按添加顺序执行）
-        config.addInterceptor(new CustomInterceptor());
-    }
+JQuickCurlConfig.getInstance().addInterceptor(auth);
 ```
-## 📋 测试用例示例
-### 1. 单元测试（基础功能验证）
-```java
-import org.junit.Test;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 
-/**
- * JCurlInvoker 核心功能单元测试
- * 验证代理调用、参数传递、文件下载等基础功能
- */
-public class JCurlInvokerInvokeTest {
-    
-    /**
-     * 测试基础认证接口调用（全局变量替换）
-     * 验证${user}/${password}占位符替换和接口返回值解析
-     */
-    @Test
-    public void retriveUser() throws Exception {
-        // 创建API代理实例
-        ApiService api = JCurlInvoker.createProxy(ApiService.class);
-        
-        // 准备请求参数（绑定全局变量）
-        JQuickCurlReq req = new JQuickCurlReq();
-        req.put("user", "xsasaxsa@qq.com");
-        req.put("password", "xasxsa");
-        
-        // 执行请求并获取结果
-        JGithubAuth result = api.retriveUser(req);
-        System.out.println(result); // 打印结果用于调试
-    }
-    
-    /**
-     * 测试文件下载功能
-     * 验证字节数组返回值处理及本地文件写入
-     */
-    @Test
-    public void downloadByte() throws Exception {
-        // 创建API代理实例
-        UserService api = JCurlInvoker.createProxy(UserService.class);
-        // 准备请求参数
-        JQuickCurlReq req = new JQuickCurlReq();
-        req.put("user", "xsasaxsa@qq.com");
-        req.put("password", "xasxsa");
-        // 执行下载请求，获取字节数组
-        byte[] bytes = api.download(req);
-        // 将下载的字节写入本地文件
-        Path path = Paths.get("d://test/xx1.txt");
-        Files.write(path, bytes, StandardOpenOption.CREATE);
-    }
-}
+### 批量执行
+
+使用 `JQuickCurlBatchRunner.runCurlCommands(Object, Class<T>)` 扫描命令类并返回结果列表；需要方法无参且标注 `@JCurlCommand`。`@JTimeout` 可用于单个批量命令。
+
+### 代理工厂
+
+- 注解代理：`JCurlInvoker.createProxy(Api.class)`。
+- XML 代理：`new JQuickXmlFactory(new JQuickCurlXmlParseFactory(), "apis.xml").createApi(Api.class)`。
+- 方法引用：`JCurlInvoker.invoke(Service::method, request, ReturnType.class)`。
+
+## 项目架构设计
+
+```text
+curl 字符串 / 注解 / XML
+          |
+          v
+  ANTLR Lexer + Parser       <- 解析 curl 语法
+          |
+          v
+  Visitor + JContext         <- 变量、条件和请求上下文
+          |
+          v
+  OkHttp 执行层              <- 连接池、超时、重试、拦截器
+          |
+          v
+  JQuickCurlResponseBody     <- 原始响应
+          |
+          v
+  ResponseConvert / ResultFactory <- String、对象、集合、byte[] 等
 ```
-### 2. XML 配置测试（配置化接口验证）
-```java
-import org.junit.Test;
-import java.util.List;
-/**
-* XML配置方式的接口调用测试
-* 验证XML配置加载、接口代理生成、配置化接口调用
-  */
-public class CurlApiExample {
 
-  /**
-    * 测试XML配置的接口调用
-    * 验证apis.xml配置加载及all方法的执行结果
-      */
-      @Test
-      public void all1() throws Exception {
-          // 准备请求参数
-          JQuickCurlReq req = new JQuickCurlReq();
-          req.put("user", "xsaxsa@qq.com");
-          req.put("password", "zaZAzaZA");
-          // 加载XML配置文件，创建工厂实例
-          CurlApiFactory factory = new CurlApiFactory("apis.xml");
-          // 生成XML绑定的接口代理
-          UserApi userApi = factory.createApi(UserApi.class);
-          // 执行接口方法，获取结果并打印
-          List<JUser> list = userApi.all(req);
-          System.out.println(list);
-      }
-}
-```
-## 📚 API参考
-### 核心类
-| 类名 | 功能说明 |
-|------|----------|
-| `JCurlInvoker` | 核心调用器，支持代理创建和Lambda方式调用 |
-| `JQuickCurlReq` | 请求参数容器，用于存储请求头、参数、变量等 |
-| `JQuickCurlConfig` | 全局配置类，管理拦截器、全局参数等配置 |
-| `JContext` | 执行上下文，存储请求/响应的上下文信息 |
-| `JResult` | 通用响应结果，封装响应状态、数据、异常等 |
-| `CurlApiFactory` | XML配置工厂，用于加载XML配置并生成接口代理 |
+核心模块包括 `anno`（注解）、`parser`（ANTLR 解析器）、`visitor`（命令访问器）、`executor`（执行器）、`xml`（XML 代理）、`handler`（动态代理）、`result`（响应转换）和 `config`（全局配置）。
 
-### 核心注解
-| 注解名 | 功能说明 |
-|--------|----------|
-| `@JCurlCommand` | 标注在接口方法上，定义对应的cURL命令 |
-| `@Param` | 方法参数映射注解，绑定cURL命令中的#{参数名}占位符 |
+## 更新日志与版本特性
 
-## 🤝 贡献指南
-我们非常欢迎社区贡献，您可以通过以下方式参与：
-- 提交 Issue：反馈bug、提出新功能建议、优化文档
-- 提交 Pull Request：修复bug、新增功能、完善测试用例
-- 参与讨论：在Issue中交流技术方案、使用经验
+### 2.1.0
 
-详细的贡献指南请参考 [CONTRIBUTING.md](./CONTRIBUTING.md)
+- 完善 curl 命令解析与 HTTP 请求执行链路。
+- 支持注解代理、XML 配置代理和方法引用调用。
+- 支持变量替换、XML 条件渲染、文件上传下载和批量执行。
+- 支持超时、重试、重定向、连接池及 OkHttp 拦截器配置。
 
-## 📄 许可证
-本项目采用 **Apache License 2.0** 开源许可证，详情请查看 [LICENSE](LICENSE) 文件。
-## 💖 支持项目
-如果这个项目对您有帮助，欢迎通过以下方式支持我们：
-- ⭐ **Star** 项目：点击GitHub仓库右上角的Star按钮
-- 🐛 **反馈问题**：提交Issue反馈使用中遇到的问题或建议
-- 🔀 **贡献代码**：提交Pull Request完善功能或修复bug
+更多版本信息请查看 [Releases](https://github.com/dromara/jquick-curl/releases) 与提交记录。
 
+## 开源协议
+
+JQuickCurl 使用 [Apache License 2.0](./LICENSE) 开源。使用、修改和分发本项目时，请遵守许可证中的版权、专利和声明保留条款。
+
+## 贡献指南
+
+欢迎通过以下方式参与：
+
+1. 使用前先阅读 [CONTRIBUTING.md](./CONTRIBUTING.md)。
+2. 提交 Issue 时提供版本、运行环境、最小复现代码和完整错误信息。
+3. 提交 Pull Request 前补充或更新测试，并保持改动聚焦。
+4. 不要提交密钥、Token、个人数据或生产环境配置。
+
+## 项目归属与支持
+
+JQuickCurl 现归属于 [Dromara 开源组织](https://dromara.org/)，项目主仓库为 [github.com/dromara/jquick-curl](https://github.com/dromara/jquick-curl)。
+
+如果 JQuickCurl 帮助你减少了 HTTP 请求代码，欢迎在 GitHub 上 [Star](https://github.com/dromara/jquick-curl) 和 [Fork](https://github.com/dromara/jquick-curl/fork)，也欢迎提交 Issue 和 Pull Request。
+
+## Awesome Java
+
+JQuickCurl 已收录至 [Awesome Java](https://github.com/akullpp/awesome-java) 的 HTTP Clients 分类。
