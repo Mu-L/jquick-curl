@@ -52,13 +52,13 @@ The project is built around three distinctive ideas: **native curl parsing**, **
 
 ### Maven dependency
 
-The current project version is `2.1.0`:
+The current project version is `2.2.0`:
 
 ```xml
 <dependency>
     <groupId>io.github.paohaijiao</groupId>
     <artifactId>jquick-curl</artifactId>
-    <version>2.1.0</version>
+    <version>${version}</version>
 </dependency>
 ```
 

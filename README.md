@@ -52,13 +52,13 @@ JQuickCurl 是一款面向 Java 的 curl 命令式 HTTP 客户端框架：把浏
 
 ### Maven 依赖
 
-当前项目版本为 `2.1.0`：
+当前项目版本为 `2.2.0`：
 
 ```xml
 <dependency>
     <groupId>io.github.paohaijiao</groupId>
     <artifactId>jquick-curl</artifactId>
-    <version>2.1.0</version>
+    <version>${version}</version>
 </dependency>
 ```
 
