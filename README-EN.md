@@ -16,6 +16,7 @@ JQuickCurl is a curl-command-oriented HTTP client framework for Java. It parses 
 
 - [Key Advantages](#key-advantages)
 - [Use Cases](#use-cases)
+- [Supported curl Command Formats](#supported-curl-command-formats)
 - [Quick Start](#quick-start)
 - [Core Features](#core-features)
 - [Complete Example](#complete-example)
@@ -64,7 +65,7 @@ The current project version is `2.2.0`:
 
 ### Minimal example
 
-Declare a curl command with `@JCurlCommand`. The proxy parses and executes it, then converts the response to the declared return type.
+Declare a curl command with `@JCurlCommand`. The generated proxy parses and executes the command, then converts the response to the method's declared return type.
 
 ```java
 import com.github.paohaijiao.anno.JCurlCommand;
@@ -84,6 +85,78 @@ class Application {
     }
 }
 ```
+
+## Supported curl Command Formats
+
+JQuickCurl parses commands that start with `curl` and use `-X` or `--request` to specify the HTTP method. The current test suite covers these 8 methods: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS`, and `TRACE`.
+
+### Request methods
+
+```bash
+# GET: read resources; normally has no request body
+curl -X GET https://api.example.com/users
+
+# POST: create a resource or submit JSON
+curl -X POST https://api.example.com/users \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Ada"}'
+
+# PUT: replace a resource
+curl -X PUT https://api.example.com/users/1 \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Ada Lovelace"}'
+
+# PATCH: partially update a resource
+curl -X PATCH https://api.example.com/users/1 \
+  -H 'Content-Type: application/json' \
+  -d '{"active":true}'
+
+# DELETE: delete a resource
+curl -X DELETE https://api.example.com/users/1
+
+# HEAD: fetch response headers only
+curl -X HEAD https://api.example.com/users/1
+
+# OPTIONS: inspect server-supported methods
+curl -X OPTIONS https://api.example.com/users/1
+
+# TRACE: echo a request for diagnostics; treated as bodyless by the current executor
+curl -X TRACE https://api.example.com/trace
+```
+
+### Implemented curl options
+
+| Category | Supported format | Purpose |
+| --- | --- | --- |
+| Request method | `-X <METHOD>`, `--request <METHOD>` | Select one of the HTTP methods above |
+| Headers | `-H 'Name: value'`, `--header 'Name: value'` | Add a request header such as `Content-Type` |
+| Request data | `-d 'data'`, `--data 'data'`, `--data-ascii`, `--data-binary`, `--data-raw` | Send a request body |
+| Form encoding | `--data-urlencode 'key=value'` | Send URL-encoded form data |
+| Basic authentication | `-u 'user:password'`, `--user 'user:password'` | Generate a Basic Authorization header |
+| Redirects | `-L`, `--location`, `--max-redirs <N>` | Follow redirects and configure the maximum count |
+| File upload | `-F 'file=@/path/to/file'`, `--form 'key=value'` | Send multipart files or regular form fields |
+| File download | `-o './file'`, `--output './file'` | Write response bytes to a local file |
+| Proxy | `-x 'host:port'`, `--proxy 'host:port'`, `--socks5-hostname 'host:port'` | Use an HTTP or SOCKS5 proxy |
+| Protocol and logging | `--http2`, `-k`, `--insecure`, `-v`, `--verbose`, `-s`, `--silent` | HTTP/2, skip certificate checks, verbose, or silent output |
+
+### Use from Java
+
+Put the command in `@JCurlCommand` and execute it through a dynamic proxy. Return types may be `String`, a domain object, `JResult`, `byte[]`, or `Void`:
+
+```java
+public interface UserApi {
+    @JCurlCommand("curl -X GET https://api.example.com/users")
+    String get(JQuickCurlReq request);
+
+    @JCurlCommand("curl -X POST https://api.example.com/users -H 'Content-Type: application/json' -d '{\"name\":\"Ada\"}'")
+    String create(JQuickCurlReq request);
+}
+
+UserApi api = JCurlInvoker.createProxy(UserApi.class);
+String result = api.get(new JQuickCurlReq());
+```
+
+> Note: JQuickCurl is not a complete replacement for the system curl command. The formats above are confirmed by the current parser and test cases. Verify any unlisted curl option or HTTP method before using it. Although `CONNECT` exists in an internal enum, it is not promised as a stable documented capability.
 
 ## Core Features
 
@@ -178,7 +251,25 @@ Use XML-safe attribute values and context variables. For complex requests, prefe
 
 - `-F "file=@/path/to/file"`: upload one file.
 - Multiple `-F` options: upload several files or combine files with regular form fields.
-- `--output` / `-o`: write response bytes to the requested path; Java methods can also return `byte[]`.
+- `--output` / `-o`: the executor reads the response bytes and writes them to the local path in the command.
+- Without `--output`, declare a Java method that returns `byte[]` and save the bytes in application code.
+
+Let the curl command write the file:
+
+```java
+@JCurlCommand("curl -X GET https://api.example.com/files/report.pdf --output './download/report.pdf'")
+byte[] downloadToFile(JQuickCurlReq request);
+```
+
+Return bytes and save them in Java:
+
+```java
+@JCurlCommand("curl -X GET https://api.example.com/files/report.pdf")
+byte[] download(JQuickCurlReq request);
+
+byte[] bytes = api.download(new JQuickCurlReq());
+Files.write(Paths.get("./download/report.pdf"), bytes);
+```
 
 ### 6. Batch requests
 
@@ -357,4 +448,5 @@ If JQuickCurl saves you from writing repetitive HTTP request code, please [Star]
 
 ## Awesome Java
 
+JQuickCurl is listed in the HTTP Clients section of [Awesome Java](https://github.com/akullpp/awesome-java).
 JQuickCurl is listed in the HTTP Clients section of [Awesome Java](https://github.com/akullpp/awesome-java).

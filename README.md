@@ -16,6 +16,7 @@ JQuickCurl 是一款面向 Java 的 curl 命令式 HTTP 客户端框架：把浏
 
 - [核心优势](#核心优势)
 - [适用场景](#适用场景)
+- [支持的 curl 命令格式](#支持的-curl-命令格式)
 - [快速开始](#快速开始)
 - [核心功能详解](#核心功能详解)
 - [完整使用示例](#完整使用示例)
@@ -64,7 +65,7 @@ JQuickCurl 是一款面向 Java 的 curl 命令式 HTTP 客户端框架：把浏
 
 ### 最简示例
 
-`@JCurlCommand` 用于在接口方法上声明 curl。代理对象负责解析、执行并把响应转换为返回类型。
+`@JCurlCommand` 用于在接口方法上声明 curl。代理对象负责解析、执行并把响应转换为返回类型。文档示例与稳定能力说明仅覆盖已验证的 8 类常用 HTTP 方法：GET、POST、PUT、PATCH、DELETE、HEAD、OPTIONS 和 TRACE。
 
 ```java
 import com.github.paohaijiao.anno.JCurlCommand;
@@ -84,6 +85,78 @@ class Application {
     }
 }
 ```
+
+## 支持的 curl 命令格式
+
+JQuickCurl 解析的是以 `curl` 开头的命令，并通过 `-X` 或 `--request` 指定请求方法。当前测试用例已覆盖以下 8 类方法：`GET`、`POST`、`PUT`、`PATCH`、`DELETE`、`HEAD`、`OPTIONS`、`TRACE`。
+
+### 请求方法
+
+```bash
+# GET：查询资源，通常不带请求体
+curl -X GET https://api.example.com/users
+
+# POST：创建资源或提交 JSON
+curl -X POST https://api.example.com/users \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Ada"}'
+
+# PUT：全量更新资源
+curl -X PUT https://api.example.com/users/1 \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Ada Lovelace"}'
+
+# PATCH：局部更新资源
+curl -X PATCH https://api.example.com/users/1 \
+  -H 'Content-Type: application/json' \
+  -d '{"active":true}'
+
+# DELETE：删除资源
+curl -X DELETE https://api.example.com/users/1
+
+# HEAD：仅获取响应头
+curl -X HEAD https://api.example.com/users/1
+
+# OPTIONS：查询服务支持的方法
+curl -X OPTIONS https://api.example.com/users/1
+
+# TRACE：回显请求，用于调试；当前执行器按无请求体方法处理
+curl -X TRACE https://api.example.com/trace
+```
+
+### 已实现的 curl 选项
+
+| 分类 | 支持格式 | 用法 |
+| --- | --- | --- |
+| 请求方法 | `-X <METHOD>`、`--request <METHOD>` | 指定上述 HTTP 方法 |
+| 请求头 | `-H 'Name: value'`、`--header 'Name: value'` | 添加请求头，如 `Content-Type` |
+| 请求数据 | `-d 'data'`、`--data 'data'`、`--data-ascii`、`--data-binary`、`--data-raw` | 发送请求体 |
+| 表单编码 | `--data-urlencode 'key=value'` | 发送 URL 编码表单数据 |
+| 基础认证 | `-u 'user:password'`、`--user 'user:password'` | 自动生成 Basic Authorization |
+| 重定向 | `-L`、`--location`、`--max-redirs <N>` | 跟随重定向并配置最大次数 |
+| 文件上传 | `-F 'file=@/path/to/file'`、`--form 'key=value'` | multipart 文件或普通表单字段 |
+| 文件下载 | `-o './file'`、`--output './file'` | 将响应字节写入指定文件 |
+| 代理 | `-x 'host:port'`、`--proxy 'host:port'`、`--socks5-hostname 'host:port'` | 使用 HTTP 或 SOCKS5 代理 |
+| 协议与日志 | `--http2`、`-k`、`--insecure`、`-v`、`--verbose`、`-s`、`--silent` | HTTP/2、不校验证书、详细或静默输出 |
+
+### 在 Java 中使用
+
+将命令放入 `@JCurlCommand`，再通过动态代理执行。返回值可声明为 `String`、业务对象、`JResult`、`byte[]` 或 `Void`：
+
+```java
+public interface UserApi {
+    @JCurlCommand("curl -X GET https://api.example.com/users")
+    String get(JQuickCurlReq request);
+
+    @JCurlCommand("curl -X POST https://api.example.com/users -H 'Content-Type: application/json' -d '{\"name\":\"Ada\"}'")
+    String create(JQuickCurlReq request);
+}
+
+UserApi api = JCurlInvoker.createProxy(UserApi.class);
+String result = api.get(new JQuickCurlReq());
+```
+
+> 注意：JQuickCurl 不是系统 curl 的完整替代品。以上是当前解析器和测试用例确认过的格式；未列出的 curl 选项或 HTTP 方法，请先通过测试验证。`CONNECT` 虽然存在于内部枚举中，但当前不作为稳定文档能力承诺。
 
 ## 核心功能详解
 
@@ -178,7 +251,25 @@ XML curl 文本中可使用 `<if test="...">...</if>` 条件片段，条件成�
 
 - `-F "file=@/path/to/file"`：单文件上传。
 - 多个 `-F`：同名字段上传多个文件或混合普通表单字段。
-- `--output` / `-o`：执行器将响应字节写入指定文件；Java 返回值也可使用 `byte[]`。
+- `--output` / `-o`：执行器读取响应字节并写入命令指定的本地文件。
+- 如果不使用 `--output`，Java 方法可以声明返回 `byte[]`，再由业务代码保存文件。
+
+直接由 curl 命令写入文件：
+
+```java
+@JCurlCommand("curl -X GET https://api.example.com/files/report.pdf --output './download/report.pdf'")
+byte[] downloadToFile(JQuickCurlReq request);
+```
+
+返回字节数组后由 Java 保存：
+
+```java
+@JCurlCommand("curl -X GET https://api.example.com/files/report.pdf")
+byte[] download(JQuickCurlReq request);
+
+byte[] bytes = api.download(new JQuickCurlReq());
+Files.write(Paths.get("./download/report.pdf"), bytes);
+```
 
 ### 6. 批量请求
 

@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * packageName com.jquick.test
@@ -50,6 +51,13 @@ public class JCurlCommandProcessorTest {
 
     @Test
     public  void test() throws Exception {
+        JQuickCurlConfig.getInstance()
+                .connectTimeout(3, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(10, TimeUnit.SECONDS)
+                .maxRetryCount(2)
+                .followRedirects(true);
+
         JContext context = new JContext();
         context.put("user", "test");
         JQuickCurlConfig config = JQuickCurlConfig.getInstance();
