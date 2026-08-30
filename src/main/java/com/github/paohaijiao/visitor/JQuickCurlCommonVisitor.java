@@ -16,22 +16,19 @@
 package com.github.paohaijiao.visitor;
 
 import com.github.paohaijiao.config.JQuickCurlConfig;
-import com.github.paohaijiao.console.JConsole;
 import com.github.paohaijiao.enums.JHttpMethod;
 import com.github.paohaijiao.enums.JProxryType;
 import com.github.paohaijiao.exception.JAssert;
-import com.github.paohaijiao.media.JDataType;
-import com.github.paohaijiao.media.MediaTypeInfo;
-import com.github.paohaijiao.model.*;
+import com.github.paohaijiao.model.JCredentials;
+import com.github.paohaijiao.model.JFormParam;
+import com.github.paohaijiao.model.JHeaderParam;
+import com.github.paohaijiao.model.JProxryBean;
 import com.github.paohaijiao.param.JContext;
 import com.github.paohaijiao.parser.JQuickCurlLexer;
 import com.github.paohaijiao.parser.JQuickCurlParser;
 import com.github.paohaijiao.responseBody.JQuickCurlResponseBody;
-import com.github.paohaijiao.responseBody.JQuickCurlResponseBodyFactory;
 import com.github.paohaijiao.util.JStringUtils;
-import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
-import okio.ByteString;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -39,10 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
 import java.util.Arrays;
-import java.util.Base64;
 public class JQuickCurlCommonVisitor extends JQuickCurlCoreVisitor {
 
     public JQuickCurlCommonVisitor(JContext context){
@@ -113,8 +107,11 @@ public class JQuickCurlCommonVisitor extends JQuickCurlCoreVisitor {
             Response response = client.newCall(request).execute();
             console.info("Response:"+response);
             if (!response.isSuccessful()){
-                System.out.println("Cannot request the resource");
+                console.info("Cannot request the resource");
             };
+            if (StringUtils.isNotBlank(cookieJarFile)) {
+                saveCookiesToFile(response);
+            }
             Headers responseHeaders = response.headers();
             ResponseBody responseData = response.body();
             JQuickCurlResponseBody jquickRessponseBody = new JQuickCurlResponseBody(responseData,responseHeaders);
@@ -153,18 +150,29 @@ public class JQuickCurlCommonVisitor extends JQuickCurlCoreVisitor {
             visitHttp2Option(ctx.http2Option());
         }else if (ctx.ignoreOption() != null) {
             visitIgnoreOption(ctx.ignoreOption());
+        } else if (ctx.cookieOption() != null) {
+            visitCookieOption(ctx.cookieOption());
         }
-//        else if(ctx.headOption() != null) {
-//            visitHeadOption(ctx.headOption());
-//        }
         return null;
     }
-//    @Override
-//    public String visitHeadOption(JQuickCurlParser.HeadOptionContext ctx) {
-//        this.requestType= JHttpMethod.HEAD.getCode();
-//        return null;
-//    }
 
+    @Override
+    public Object visitCookieOption(JQuickCurlParser.CookieOptionContext ctx) {
+        if (ctx.cookieValue != null) {
+            String cookieStr = visitString(ctx.cookieValue);
+            cookieValue = cookieStr;
+            if (cookieStr.startsWith("@")) {
+                String filePath = cookieStr.substring(1);
+                loadCookiesFromFile(filePath);
+            } else {
+                parseCookieString(cookieStr);
+            }
+        }
+        if (ctx.jarFile != null) {
+            cookieJarFile = visitString(ctx.jarFile);
+        }
+        return null;
+    }
     /**
      * PASS
      * @param ctx the parse tree

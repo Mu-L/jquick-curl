@@ -32,6 +32,13 @@ public class JQuickCurlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitCookieOption(JQuickCurlParser.CookieOptionContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitRequestMethod(JQuickCurlParser.RequestMethodContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

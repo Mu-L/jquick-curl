@@ -23,6 +23,12 @@ public interface JQuickCurlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitOption(JQuickCurlParser.OptionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link JQuickCurlParser#cookieOption}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCookieOption(JQuickCurlParser.CookieOptionContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link JQuickCurlParser#requestMethod}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

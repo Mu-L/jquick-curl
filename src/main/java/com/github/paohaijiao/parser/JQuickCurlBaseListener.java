@@ -41,6 +41,18 @@ public class JQuickCurlBaseListener implements JQuickCurlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterCookieOption(JQuickCurlParser.CookieOptionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCookieOption(JQuickCurlParser.CookieOptionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterRequestMethod(JQuickCurlParser.RequestMethodContext ctx) { }
 	/**
 	 * {@inheritDoc}

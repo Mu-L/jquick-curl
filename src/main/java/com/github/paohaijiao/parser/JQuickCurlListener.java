@@ -28,6 +28,16 @@ public interface JQuickCurlListener extends ParseTreeListener {
 	 */
 	void exitOption(JQuickCurlParser.OptionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link JQuickCurlParser#cookieOption}.
+	 * @param ctx the parse tree
+	 */
+	void enterCookieOption(JQuickCurlParser.CookieOptionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link JQuickCurlParser#cookieOption}.
+	 * @param ctx the parse tree
+	 */
+	void exitCookieOption(JQuickCurlParser.CookieOptionContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link JQuickCurlParser#requestMethod}.
 	 * @param ctx the parse tree
 	 */
