@@ -131,6 +131,7 @@ curl -X TRACE https://api.example.com/trace
 | 请求方法 | `-X <METHOD>`、`--request <METHOD>` | 指定上述 HTTP 方法 |
 | 请求头 | `-H 'Name: value'`、`--header 'Name: value'` | 添加请求头，如 `Content-Type` |
 | 请求数据 | `-d 'data'`、`--data 'data'`、`--data-ascii`、`--data-binary`、`--data-raw` | 发送请求体 |
+| **Cookie** | **`-b <data>`、`--cookie <data>`、`-c <file>`、`--cookie-jar <file>`** | **发送 Cookie 或保存响应 Cookie 到文件** |
 | 表单编码 | `--data-urlencode 'key=value'` | 发送 URL 编码表单数据 |
 | 基础认证 | `-u 'user:password'`、`--user 'user:password'` | 自动生成 Basic Authorization |
 | 重定向 | `-L`、`--location`、`--max-redirs <N>` | 跟随重定向并配置最大次数 |
@@ -155,7 +156,30 @@ public interface UserApi {
 UserApi api = JCurlInvoker.createProxy(UserApi.class);
 String result = api.get(new JQuickCurlReq());
 ```
+### Cookie 支持
 
+JQuickCurl 支持 curl 标准的 Cookie 发送和保存功能：
+
+**发送 Cookie**
+
+- **字符串方式**：使用 `-b "name1=value1; name2=value2"` 直接发送 Cookie
+- **文件方式**：使用 `-b cookies.txt` 从 Netscape/Mozilla 格式的文件读取 Cookie
+
+```java
+public interface CookieApi {
+    // 发送 Cookie 字符串
+    @JCurlCommand("curl -X GET https://api.example.com/me -b \"session=abc123; user=test\"")
+    String getWithCookie(JQuickCurlReq request);
+
+    // 从文件读取 Cookie
+    @JCurlCommand("curl -X GET https://api.example.com/me -b cookies.txt")
+    String getWithCookieFile(JQuickCurlReq request);
+}
+public interface CookieSaveApi {
+    @JCurlCommand("curl -X POST https://api.example.com/login -d 'username=admin&password=123' -c cookies.txt")
+    String loginAndSaveCookie(JQuickCurlReq request);
+}
+```
 > 注意：JQuickCurl 不是系统 curl 的完整替代品。以上是当前解析器和测试用例确认过的格式；未列出的 curl 选项或 HTTP 方法，请先通过测试验证。`CONNECT` 虽然存在于内部枚举中，但当前不作为稳定文档能力承诺。
 
 ## 核心功能详解
