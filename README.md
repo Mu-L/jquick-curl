@@ -49,6 +49,29 @@ The project is built around three distinctive ideas: **native curl parsing**, **
 - Centralize authentication variables, environment hosts, conditional headers, and request bodies.
 - Implement file uploads, batch API calls, downloads, and HTTP integration tests.
 
+---
+
+## III. JQuick Ecosystem Navigation
+
+> Click any row to jump to a sibling project. All projects share `io.github.paohaijiao` groupId.
+> License baseline: Apache-2.0 (✅ free commercial use), **except jquick-pdf which is AGPL-3.0 (⚠️ commercial license required)**.
+
+| # | Project          | Repository                                                            | Description                                                                  | License |
+|---|------------------|-----------------------------------------------------------------------|------------------------------------------------------------------------------|---------|
+| 1 | **jquick-sql** ⭐ | [paohaijiao/jquick-sql](https://github.com/paohaijiao/jquick-sql)     | Embedded SQL Query Engine (this repo)                                        | Apache-2.0 |
+| 2 | jquick-hub       | [paohaijiao/jquick-hub](https://github.com/paohaijiao/jquick-hub)     | Lightweight Netty tcp Gateway                                                | Apache-2.0 |
+| 3 | jquick-excel     | [paohaijiao/jquick-excel](https://github.com/paohaijiao/jquick-excel) | Excel read/write; SAX streaming for huge files; legacy POI 3.x compatible    | Apache-2.0 |
+| 4 | jquick-pdf       | [paohaijiao/jquick-pdf](https://github.com/paohaijiao/jquick-pdf)     | PDF tooling based on iText7 (template render / sign / watermark / merge-split) | **AGPL-3.0 ⚠️** |
+| 5 | jquick-asm       | [paohaijiao/jquick-asm](https://github.com/paohaijiao/jquick-asm)     | ASM 9.x bytecode toolkit (AOP proxy / dynamic Bean / class transformer)      | Apache-2.0 |
+| 6 | jquick-curl      | [paohaijiao/jquick-curl](https://github.com/paohaijiao/jquick-curl)   | HTTP client (fluent API / pool / resume-download / retry)                    | Apache-2.0 |
+| 7 | jquick-java      | [paohaijiao/jquick-java](https://github.com/paohaijiao/jquick-java)   | ANTLR4 script engine + XML dynamic proxy (hot-reload rule engine)            | Apache-2.0 |
+| 8 | jquick-json      | [paohaijiao/jquick-json](https://github.com/paohaijiao/jquick-json)   | JSON read/write                                                              | Apache-2.0 |
+| 9 | jquick-path      | [paohaijiao/jquick-path](https://github.com/paohaijiao/jquick-path)   | Path manipulation toolkit                        | Apache-2.0 |
+
+> 📌 **Cross-project combinations**: jquick-sql + jquick-curl → register REST JSON rows as in-memory tables, then JOIN them; jquick-sql + jquick-excel → read Excel rows then JOIN against your RDBMS data. See each project's README for more.
+
+---
+
 ## Quick Start
 
 ### Maven dependency
