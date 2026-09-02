@@ -40,7 +40,9 @@ import java.util.concurrent.TimeUnit;
 public class JLoggingInterceptor implements Interceptor {
 
     private static final Charset UTF8 = StandardCharsets.UTF_8;
+
     private JConsole console=new JConsole();
+
     private final JCurlLevelLog level;
 
     public JLoggingInterceptor() {
@@ -54,10 +56,6 @@ public class JLoggingInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
-        if (level == JCurlLevelLog.NONE) {
-            return chain.proceed(request);
-        }
-        logRequest(request);
         long startNs = System.nanoTime();
         Response response;
         try {
@@ -67,55 +65,7 @@ public class JLoggingInterceptor implements Interceptor {
             throw e;
         }
         long tookMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNs);
-        console.log(JLogLevel.INFO,"\"chain response: "+tookMs+" ms\",");
-        console.log(JLogLevel.INFO,"\"chain response: "+response+" \",");
+        console.log(JLogLevel.INFO," the request cost : "+tookMs+" ms,");
         return response;
-    }
-    private void logRequest(Request request) throws IOException {
-        console.log(JLogLevel.INFO,"current url is:"+request.url());
-        if (level == JCurlLevelLog.HEADERS || level == JCurlLevelLog.ALL) {
-            Headers headers = request.headers();
-            for (int i = 0, count = headers.size(); i < count; i++) {
-                console.log(JLogLevel.INFO,"current header is-->"+headers.name(i)+":"+headers.value(i));
-            }
-            if (level == JCurlLevelLog.ALL && request.body() != null) {
-                RequestBody requestBody = request.body();
-                if (isPlaintext(requestBody.contentType())) {
-                    Buffer buffer = new Buffer();
-                    requestBody.writeTo(buffer);
-                    console.log(JLogLevel.INFO,"current request body is-->"+buffer.readString(UTF8));
-                } else {
-                    console.log(JLogLevel.INFO," [binary body omitted, content-type: {"+requestBody.contentType()+"}]");
-                }
-            }
-        }
-        console.log(JLogLevel.INFO," --> END"+request.method()+"");
-
-    }
-    private void logResponse(Response response, long tookMs) throws IOException {
-        console.error("<-- code:" +response.code()+" message:"+response.message()+" tookMs:"+tookMs  +"-->");
-        if (level == JCurlLevelLog.HEADERS || level == JCurlLevelLog.ALL) {
-            Headers headers = response.headers();
-            for (int i = 0, count = headers.size(); i < count; i++) {
-                console.log(JLogLevel.INFO,"current header is-->"+headers.name(i)+":"+headers.value(i));
-            }
-            if (level == JCurlLevelLog.ALL && response.body() != null) {
-                ResponseBody responseBody = response.body();
-                if (isPlaintext(responseBody.contentType())) {
-                    String bodyString = responseBody.string();
-                    console.log(JLogLevel.INFO,"current request body is-->"+bodyString);
-                    response = response.newBuilder().body(ResponseBody.create(bodyString, responseBody.contentType())).build();
-                } else {
-                    console.log(JLogLevel.INFO," [binary body omitted, content-type: {"+responseBody.contentType()+"}]");
-                }
-            }
-        }
-        console.log(JLogLevel.INFO,"<-- END HTTP");
-    }
-    private static boolean isPlaintext(MediaType mediaType) {
-        if (mediaType == null) return false;
-        String type = mediaType.type();
-        String subtype = mediaType.subtype();
-        return ("text".equals(type) || "json".equals(subtype) || "xml".equals(subtype) || "html".equals(subtype) || "x-www-form-urlencoded".equals(subtype));
     }
 }

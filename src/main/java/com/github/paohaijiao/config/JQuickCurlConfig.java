@@ -15,6 +15,7 @@
  */
 package com.github.paohaijiao.config;
 
+import com.github.paohaijiao.interceptor.JLoggingInterceptor;
 import lombok.Data;
 import okhttp3.Interceptor;
 
@@ -64,7 +65,9 @@ public class JQuickCurlConfig {
 
     private static final JQuickCurlConfig INSTANCE = new JQuickCurlConfig();
 
-    private JQuickCurlConfig() {}
+    private JQuickCurlConfig() {
+        this.interceptors.add(new JLoggingInterceptor());
+    }
 
     public static JQuickCurlConfig getInstance() {
         return INSTANCE;
