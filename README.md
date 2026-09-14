@@ -1,209 +1,241 @@
-# JQuickCurl
+<p align="center">
+  <img src="src/main/resources/static/jquick-logo.svg" width="240" alt="jquick-curl logo" />
+</p>
 
-[![GitHub Stars](https://img.shields.io/github/stars/dromara/jquick-curl?style=flat-square)](https://github.com/dromara/jquick-curl/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/dromara/jquick-curl?style=flat-square)](https://github.com/dromara/jquick-curl/network/members)
-[![License](https://img.shields.io/github/license/dromara/jquick-curl?style=flat-square)](https://github.com/dromara/jquick-curl/blob/main/LICENSE)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.paohaijiao/jquick-curl?style=flat-square)](https://central.sonatype.com/artifact/io.github.paohaijiao/jquick-curl)
-[![Awesome Java](https://awesome.re/badge.svg)](https://github.com/akullpp/awesome-java)
+<h1 align="center">jquick-curl</h1>
 
-[简体中文](./README-CN.md) | [English](./README.md)
+<p align="center">
+  <a href="https://central.sonatype.com/artifact/io.github.paohaijiao/jquick-curl"><img src="https://img.shields.io/maven-central/v/io.github.paohaijiao/jquick-curl.svg?style=flat-square&label=Maven%20Central" alt="Maven Central" /></a>
+  <a href="https://github.com/dromara/jquick-curl/stargazers"><img src="https://img.shields.io/github/stars/dromara/jquick-curl.svg?style=flat-square&logo=github&label=Stars" alt="GitHub Stars" /></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/github/license/dromara/jquick-curl.svg?style=flat-square&label=License" alt="License" /></a>
+  <a href="#quick-start"><img src="https://img.shields.io/badge/JDK-8%2B-orange.svg?style=flat-square" alt="JDK 8+" /></a>
+  <a href="https://github.com/akullpp/awesome-java"><img src="https://awesome.re/mentioned-badge.svg" alt="Awesome Java" /></a>
+</p>
 
-JQuickCurl is a curl-command-oriented HTTP client framework for Java. It parses reusable native curl commands from a browser, Postman, or terminal into executable Java requests, with annotation and XML configuration, variable substitution, conditional rendering, file transfer, batch execution, and dynamic proxy clients.
+<p align="center">
+  <b>English</b> | <a href="./README-CN.md">简体中文</a>
+</p>
 
-> A [Dromara](https://dromara.org/) project. Main repository: [dromara/jquick-curl](https://github.com/dromara/jquick-curl).
+**jquick-curl** is a lightweight HTTP client for Java that natively mimics the curl style API: you write a request as a plain curl command and call it as an ordinary Java method. Commands are parsed with ANTLR and executed over a pooled, high-performance transport layer, so there is no hand-written request building code. jquick-curl is a sub-project of the JQuick ecosystem and is maintained by the [Dromara](https://dromara.org/) open-source community.
 
-## Contents
+⭐ This project is included in the [Awesome Java](https://github.com/akullpp/awesome-java) list.
 
-- [Key Advantages](#key-advantages)
-- [Use Cases](#use-cases)
-- [Supported curl Command Formats](#supported-curl-command-formats)
-- [Quick Start](#quick-start)
-- [Core Features](#core-features)
-- [Complete Example](#complete-example)
-- [Advanced Features](#advanced-features)
-- [Architecture](#architecture)
-- [Release Notes](#release-notes)
-- [License](#license)
-- [Contributing](#contributing)
-- [Project Ownership and Support](#project-ownership-and-support)
-- [Awesome Java](#awesome-java)
+## Features
 
-## Key Advantages
-
-| Dimension | JQuickCurl | OkHttp / RestTemplate / HttpClient |
-| --- | --- | --- |
-| Request definition | Reuse native curl commands directly | Manually build requests, headers, parameters, and bodies |
-| Collaboration | Share the same request format across frontend, backend, and QA | Translate between curl and client-specific APIs |
-| Configuration | `@JCurlCommand` annotations plus XML | Primarily Java builders, templates, or framework configuration |
-| Dynamic requests | Variables and XML conditions inside the command | Manually concatenate URLs, bodies, and conditional branches |
-| API integration | Interface plus dynamic proxy | Write and maintain service wrappers by hand |
-| Files and methods | Common HTTP methods, multipart upload, and downloads | Powerful, but request descriptions are more tightly coupled to code |
-
-The project is built around three distinctive ideas: **native curl parsing**, **zero hand-written request construction**, and **dynamic XML conditions**. It uses OkHttp as the transport layer and ANTLR to parse curl syntax; it does not start a system curl process.
-
-## Use Cases
-
-- Move curl snippets from Postman or browser developer tools into Java quickly.
-- Integrate payment providers, microservices, data platforms, and third-party APIs.
-- Keep a large collection of API definitions in XML and separate them from business code.
-- Centralize authentication variables, environment hosts, conditional headers, and request bodies.
-- Implement file uploads, batch API calls, downloads, and HTTP integration tests.
-
----
-
-## III. JQuick Ecosystem Navigation
-
-> Click any row to jump to a sibling project. All projects share `io.github.paohaijiao` groupId.
-> License baseline: Apache-2.0 (✅ free commercial use), **except jquick-pdf which is AGPL-3.0 (⚠️ commercial license required)**.
-
-| # | Project          | Repository                                                            | Description                                                                  | License |
-|---|------------------|-----------------------------------------------------------------------|------------------------------------------------------------------------------|---------|
-| 1 | **jquick-sql** ⭐ | [paohaijiao/jquick-sql](https://github.com/paohaijiao/jquick-sql)     | Embedded SQL Query Engine (this repo)                                        | Apache-2.0 |
-| 2 | jquick-hub       | [paohaijiao/jquick-hub](https://github.com/paohaijiao/jquick-hub)     | Lightweight Netty tcp Gateway                                                | Apache-2.0 |
-| 3 | jquick-excel     | [paohaijiao/jquick-excel](https://github.com/paohaijiao/jquick-excel) | Excel read/write; SAX streaming for huge files; legacy POI 3.x compatible    | Apache-2.0 |
-| 4 | jquick-pdf       | [paohaijiao/jquick-pdf](https://github.com/paohaijiao/jquick-pdf)     | PDF tooling based on iText7 (template render / sign / watermark / merge-split) | **AGPL-3.0 ⚠️** |
-| 5 | jquick-asm       | [paohaijiao/jquick-asm](https://github.com/paohaijiao/jquick-asm)     | ASM 9.x bytecode toolkit (AOP proxy / dynamic Bean / class transformer)      | Apache-2.0 |
-| 6 | jquick-curl      | [paohaijiao/jquick-curl](https://github.com/paohaijiao/jquick-curl)   | HTTP client (fluent API / pool / resume-download / retry)                    | Apache-2.0 |
-| 7 | jquick-java      | [paohaijiao/jquick-java](https://github.com/paohaijiao/jquick-java)   | ANTLR4 script engine + XML dynamic proxy (hot-reload rule engine)            | Apache-2.0 |
-| 8 | jquick-json      | [paohaijiao/jquick-json](https://github.com/paohaijiao/jquick-json)   | JSON read/write                                                              | Apache-2.0 |
-| 9 | jquick-path      | [paohaijiao/jquick-path](https://github.com/paohaijiao/jquick-path)   | Path manipulation toolkit                        | Apache-2.0 |
-
-> 📌 **Cross-project combinations**: jquick-sql + jquick-curl → register REST JSON rows as in-memory tables, then JOIN them; jquick-sql + jquick-excel → read Excel rows then JOIN against your RDBMS data. See each project's README for more.
-
----
+- **Native curl style API** — describe a request with a curl command, call it with a Java method.
+- **Annotation and XML configuration** — declare requests with `@JCurlCommand` or centralize them in `apis.xml`.
+- **Dynamic proxy clients** — `JCurlInvoker.createProxy(UserApi.class)` turns an interface into a working client.
+- **Variable substitution** — resolve `${name}` / `#{name}` placeholders from the request at runtime.
+- **Conditional rendering** — render headers or options only when an XML `<if test="...">` expression is true.
+- **Cookie support** — manual cookies, a file-backed cookie jar, and `Set-Cookie` persistence.
+- **HTTP methods** — `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS`, `TRACE`.
+- **File transfer** — multipart upload with `-F` and download with `-o` / `--output`.
+- **Batch execution** — run every `@JCurlCommand` method of a class in a single call.
+- **Timeouts, retries, redirects and connection pooling** — configured once through `JQuickCurlConfig`.
+- **Interceptors** — add authentication, logging or request preprocessing globally.
+- **Proxy and SSL** — HTTP / SOCKS5 proxy, plus `-k` / `--insecure` to skip certificate checks.
 
 ## Quick Start
 
-### Maven dependency
-
-The current project version is `2.2.0`:
+### 1. Maven dependency
 
 ```xml
 <dependency>
     <groupId>io.github.paohaijiao</groupId>
     <artifactId>jquick-curl</artifactId>
-    <version>${version}</version>
+    <version>2.5.0</version>
 </dependency>
 ```
 
-### Minimal example
+### 2. Basic GET
 
-Declare a curl command with `@JCurlCommand`. The generated proxy parses and executes the command, then converts the response to the method's declared return type.
+Declare the curl command on an interface method, then create a proxy and call it.
 
 ```java
 import com.github.paohaijiao.anno.JCurlCommand;
 import com.github.paohaijiao.domain.req.JQuickCurlReq;
 import com.github.paohaijiao.executor.JCurlInvoker;
 
-public interface EchoApi {
-    @JCurlCommand("curl -X GET https://xxx.org/get")
-    String get(JQuickCurlReq request);
+public interface UserApi {
+
+    // GET request: returns the response body as a String
+    @JCurlCommand("curl -X GET https://httpbin.org/get")
+    String list(JQuickCurlReq request);
 }
 
-class Application {
+class GetDemo {
     public static void main(String[] args) throws Exception {
-        EchoApi api = JCurlInvoker.createProxy(EchoApi.class);
-        String response = api.get(new JQuickCurlReq());
-        System.out.println(response);
+        UserApi api = JCurlInvoker.createProxy(UserApi.class);
+        String body = api.list(new JQuickCurlReq());
+        System.out.println(body);
     }
 }
 ```
 
-## Supported curl Command Formats
-
-JQuickCurl parses commands that start with `curl` and use `-X` or `--request` to specify the HTTP method. The current test suite covers these 8 methods: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS`, and `TRACE`.
-
-### Request methods
-
-```bash
-# GET: read resources; normally has no request body
-curl -X GET https://api.example.com/users
-
-# POST: create a resource or submit JSON
-curl -X POST https://api.example.com/users \
-  -H 'Content-Type: application/json' \
-  -d '{"name":"Ada"}'
-
-# PUT: replace a resource
-curl -X PUT https://api.example.com/users/1 \
-  -H 'Content-Type: application/json' \
-  -d '{"name":"Ada Lovelace"}'
-
-# PATCH: partially update a resource
-curl -X PATCH https://api.example.com/users/1 \
-  -H 'Content-Type: application/json' \
-  -d '{"active":true}'
-
-# DELETE: delete a resource
-curl -X DELETE https://api.example.com/users/1
-
-# HEAD: fetch response headers only
-curl -X HEAD https://api.example.com/users/1
-
-# OPTIONS: inspect server-supported methods
-curl -X OPTIONS https://api.example.com/users/1
-
-# TRACE: echo a request for diagnostics; treated as bodyless by the current executor
-curl -X TRACE https://api.example.com/trace
-```
-
-### Implemented curl options
-
-| Category | Supported format | Purpose |
-| --- | --- | --- |
-| Request method | `-X <METHOD>`, `--request <METHOD>` | Select one of the HTTP methods above |
-| Headers | `-H 'Name: value'`, `--header 'Name: value'` | Add a request header such as `Content-Type` |
-| Request data | `-d 'data'`, `--data 'data'`, `--data-ascii`, `--data-binary`, `--data-raw` | Send a request body |
-| Form encoding | `--data-urlencode 'key=value'` | Send URL-encoded form data |
-| Basic authentication | `-u 'user:password'`, `--user 'user:password'` | Generate a Basic Authorization header |
-| Redirects | `-L`, `--location`, `--max-redirs <N>` | Follow redirects and configure the maximum count |
-| File upload | `-F 'file=@/path/to/file'`, `--form 'key=value'` | Send multipart files or regular form fields |
-| File download | `-o './file'`, `--output './file'` | Write response bytes to a local file |
-| Proxy | `-x 'host:port'`, `--proxy 'host:port'`, `--socks5-hostname 'host:port'` | Use an HTTP or SOCKS5 proxy |
-| Protocol and logging | `--http2`, `-k`, `--insecure`, `-v`, `--verbose`, `-s`, `--silent` | HTTP/2, skip certificate checks, verbose, or silent output |
-
-### Use from Java
-
-Put the command in `@JCurlCommand` and execute it through a dynamic proxy. Return types may be `String`, a domain object, `JResult`, `byte[]`, or `Void`:
+### 3. Basic POST
 
 ```java
-public interface UserApi {
-    @JCurlCommand("curl -X GET https://api.example.com/users")
-    String get(JQuickCurlReq request);
+import com.github.paohaijiao.anno.JCurlCommand;
+import com.github.paohaijiao.domain.req.JQuickCurlReq;
+import com.github.paohaijiao.executor.JCurlInvoker;
 
-    @JCurlCommand("curl -X POST https://api.example.com/users -H 'Content-Type: application/json' -d '{\"name\":\"Ada\"}'")
+public interface OrderApi {
+
+    // POST request with a JSON body
+    @JCurlCommand("curl -X POST https://httpbin.org/post " +
+            "-H 'Content-Type: application/json' " +
+            "-d '{\"sku\":\"A-1001\",\"count\":2}'")
     String create(JQuickCurlReq request);
 }
 
-UserApi api = JCurlInvoker.createProxy(UserApi.class);
-String result = api.get(new JQuickCurlReq());
+class PostDemo {
+    public static void main(String[] args) throws Exception {
+        OrderApi api = JCurlInvoker.createProxy(OrderApi.class);
+        String body = api.create(new JQuickCurlReq());
+        System.out.println(body);
+    }
+}
 ```
 
-> Note: JQuickCurl is not a complete replacement for the system curl command. The formats above are confirmed by the current parser and test cases. Verify any unlisted curl option or HTTP method before using it. Although `CONNECT` exists in an internal enum, it is not promised as a stable documented capability.
+### 4. Cookie usage
 
-## Core Features
+jquick-curl implements the cookie options of native curl: `-b` / `--cookie` for sending cookies and `-c` / `--cookie-jar` for persisting them. Cookies are merged into a single `Cookie` request header, and every `Set-Cookie` header can be saved to a Netscape cookie file that plays the role of a persistent cookie store.
 
-### 1. Annotation-based requests
-
-Use annotations when request definitions belong close to the Java API interface:
+#### 4.1 Set a single cookie manually
 
 ```java
-public interface UserApi {
-    @JCurlCommand("curl -X GET 'https://api.example.com/users/${id}'")
-    String getUser(JQuickCurlReq request);
+import com.github.paohaijiao.anno.JCurlCommand;
+import com.github.paohaijiao.domain.req.JQuickCurlReq;
+import com.github.paohaijiao.executor.JCurlInvoker;
+
+public interface CookieApi {
+
+    // Single cookie: -b / --cookie 'name=value'
+    @JCurlCommand("curl -X GET https://httpbin.org/cookies -b 'sessionId=abc123'")
+    String withSingleCookie(JQuickCurlReq request);
 }
 
-JQuickCurlReq request = new JQuickCurlReq();
-request.put("id", 1001);
-UserApi api = JCurlInvoker.createProxy(UserApi.class);
-String body = api.getUser(request);
+class SingleCookieDemo {
+    public static void main(String[] args) throws Exception {
+        CookieApi api = JCurlInvoker.createProxy(CookieApi.class);
+        System.out.println(api.withSingleCookie(new JQuickCurlReq()));
+    }
+}
 ```
 
-`@JCurlCommand` also exposes execution and validation attributes such as `execute`, `expectedStatus`, `expectedBusinessStatus`, and `validationScript`.
+#### 4.2 Set multiple cookies manually
 
-### 2. XML configuration
+```java
+public interface CookieApi {
 
-Use XML to centralize a collection of APIs and keep curl definitions separate from Java code. The project provides the following DTD:
+    // Multiple cookies: separate them with a semicolon inside one -b option
+    @JCurlCommand("curl -X GET https://httpbin.org/cookies " +
+            "-b 'sessionId=abc123; theme=dark; lang=en'")
+    String withMultipleCookies(JQuickCurlReq request);
+
+    // Equivalent form: set the Cookie header directly with -H
+    @JCurlCommand("curl -X GET https://httpbin.org/cookies " +
+            "-H 'Cookie: sessionId=abc123; theme=dark; lang=en'")
+    String withCookieHeader(JQuickCurlReq request);
+}
+```
+
+Multiple cookies are separated by `;`. Both `-b` and `-H 'Cookie: ...'` end up in the same `Cookie` request header, and repeated names are merged instead of overwritten.
+
+#### 4.3 Carry cookies automatically from a cookie jar file
+
+```java
+public interface CookieApi {
+
+    // Load cookies from a Netscape / Mozilla cookie file: -b @file
+    @JCurlCommand("curl -X GET https://httpbin.org/cookies -b @./cookies.txt")
+    String withJarFile(JQuickCurlReq request);
+}
+```
+
+`-b @cookies.txt` reads a Netscape format cookie file and attaches the cookies to the request automatically, which is how jquick-curl keeps cookies across calls. Note the `@` prefix before the file name.
+
+#### 4.4 Read `Set-Cookie` from the response
+
+Return `JQuickCurlResponseBody` instead of `String` when you need response headers.
+
+```java
+import com.github.paohaijiao.anno.JCurlCommand;
+import com.github.paohaijiao.domain.req.JQuickCurlReq;
+import com.github.paohaijiao.executor.JCurlInvoker;
+import com.github.paohaijiao.responseBody.JQuickCurlResponseBody;
+
+import java.util.List;
+
+public interface LoginApi {
+
+    // Return the raw response body object to access headers
+    @JCurlCommand("curl -X GET 'https://httpbin.org/cookies/set?sessionId=abc123'")
+    JQuickCurlResponseBody setCookie(JQuickCurlReq request);
+}
+
+class ReadSetCookieDemo {
+    public static void main(String[] args) throws Exception {
+        LoginApi api = JCurlInvoker.createProxy(LoginApi.class);
+        JQuickCurlResponseBody response = api.setCookie(new JQuickCurlReq());
+
+        // First Set-Cookie header
+        String first = response.header("Set-Cookie");
+        // All Set-Cookie headers (redirects may return several)
+        List<String> all = response.headers("Set-Cookie");
+        // Response payload
+        String body = response.asString();
+
+        System.out.println(first);
+        System.out.println(all);
+        System.out.println(body);
+    }
+}
+```
+
+#### 4.5 Persist cookies and reuse the session
+
+```java
+import com.github.paohaijiao.anno.JCurlCommand;
+import com.github.paohaijiao.domain.req.JQuickCurlReq;
+import com.github.paohaijiao.executor.JCurlInvoker;
+import com.github.paohaijiao.responseBody.JQuickCurlResponseBody;
+
+public interface SessionApi {
+
+    // Step 1: sign in and save every Set-Cookie into cookies.txt (-c / --cookie-jar)
+    @JCurlCommand("curl -X POST https://httpbin.org/post " +
+            "-H 'Content-Type: application/json' " +
+            "-d '{\"user\":\"ada\",\"password\":\"secret\"}' " +
+            "-c ./cookies.txt")
+    JQuickCurlResponseBody login(JQuickCurlReq request);
+
+    // Step 2: reuse the persisted cookies on the next request (-b @file)
+    @JCurlCommand("curl -X GET https://httpbin.org/cookies -b @./cookies.txt")
+    String profile(JQuickCurlReq request);
+}
+
+class SessionDemo {
+    public static void main(String[] args) throws Exception {
+        SessionApi api = JCurlInvoker.createProxy(SessionApi.class);
+        JQuickCurlReq request = new JQuickCurlReq();
+
+        // Writes ./cookies.txt in Netscape format
+        api.login(request);
+
+        // Cookies from the file are attached automatically
+        System.out.println(api.profile(request));
+    }
+}
+```
+
+`-c` / `--cookie-jar` writes every `Set-Cookie` header to the given file in Netscape format (seven tab-separated columns), and `-b @file` reuses it on later requests, which keeps a login session alive across calls. Never commit a real cookie file to a repository.
+
+## More Examples
+
+### XML configuration
+
+Centralize API definitions in XML so request templates stay out of Java code.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -211,55 +243,51 @@ Use XML to centralize a collection of APIs and keep curl definitions separate fr
         "classpath:paohaijiao/dtd/Jquick-curl.dtd">
 <curls namespace="com.example.UserApi">
     <curl name="getUser" returnClass="java.lang.String">
-        curl -X GET https://api.example.com/users/#{id}
+        curl -X GET https://api.example.com/users/#{id} -b @./cookies.txt
     </curl>
 </curls>
 ```
 
-The Java method name must match the `<curl name="...">` attribute:
-
 ```java
 import com.github.paohaijiao.domain.req.JQuickCurlReq;
+import com.github.paohaijiao.xml.JQuickCurlXmlParseFactory;
+import com.github.paohaijiao.xml.factory.JQuickFactory;
+import com.github.paohaijiao.xml.factory.JQuickXmlFactory;
+import com.github.paohaijiao.xml.handler.JQuickParseHandler;
 
 public interface UserApi {
     String getUser(JQuickCurlReq request);
 }
+
+class XmlDemo {
+    public static void main(String[] args) throws Exception {
+        JQuickParseHandler parser = new JQuickCurlXmlParseFactory();
+        JQuickFactory factory = new JQuickXmlFactory(parser, "apis.xml");
+        UserApi api = factory.createApi(UserApi.class);
+        System.out.println(api.getUser(new JQuickCurlReq()));
+    }
+}
 ```
 
-Load the XML file and create a proxy:
+The `<curl name="...">` attribute must match the Java method name, and `#{name}` is the placeholder used by XML proxies.
 
-```java
-import com.github.paohaijiao.xml.JQuickCurlXmlParseFactory;
-import com.github.paohaijiao.xml.factory.JQuickXmlFactory;
-import com.github.paohaijiao.xml.handler.JQuickParseHandler;
-
-JQuickParseHandler parser = new JQuickCurlXmlParseFactory();
-JQuickXmlFactory factory = new JQuickXmlFactory(parser, "apis.xml");
-UserApi api = factory.createApi(UserApi.class);
-```
-
-### 3. Variable substitution
-
-- For annotation proxies, `${name}` resolves values from `JQuickCurlReq`.
-- XML proxies commonly use `#{name}` for values in the execution context, including method-bound parameters.
+### Variable substitution and conditional rendering
 
 ```java
 public interface AuthApi {
-    @JCurlCommand("curl -u ${user}:${password} https://api.example.com/me")
+
+    // ${...} placeholders are resolved from JQuickCurlReq
+    @JCurlCommand("curl -X GET https://api.example.com/me -u ${user}:${password}")
     String currentUser(JQuickCurlReq request);
 }
-
-JQuickCurlReq request = new JQuickCurlReq();
-request.put("user", "demo");
-request.put("password", "secret");
-String result = JCurlInvoker.createProxy(AuthApi.class).currentUser(request);
 ```
 
-Never commit real passwords, tokens, or private keys to Java source or XML. Inject them at runtime instead.
-
-### 4. Conditional XML rendering
-
-Use `<if test="...">...</if>` inside XML curl content. The enclosed headers, parameters, or options are rendered only when the expression is true:
+```java
+JQuickCurlReq request = new JQuickCurlReq();
+request.put("user", "ada");
+request.put("password", System.getenv("API_PASSWORD"));
+String me = JCurlInvoker.createProxy(AuthApi.class).currentUser(request);
+```
 
 ```xml
 <curl name="search" returnClass="java.lang.String">
@@ -268,136 +296,83 @@ Use `<if test="...">...</if>` inside XML curl content. The enclosed headers, par
 </curl>
 ```
 
-Use XML-safe attribute values and context variables. For complex requests, prefer several small `<if>` blocks over one opaque expression.
+`${...}` is used by annotation proxies and `#{...}` by XML proxies. A header inside `<if>` is appended only when the expression is true. Keep credentials in variables instead of hard-coding them in the command.
 
-### 5. File upload and download
-
-- `-F "file=@/path/to/file"`: upload one file.
-- Multiple `-F` options: upload several files or combine files with regular form fields.
-- `--output` / `-o`: the executor reads the response bytes and writes them to the local path in the command.
-- Without `--output`, declare a Java method that returns `byte[]` and save the bytes in application code.
-
-Let the curl command write the file:
+### File upload and download
 
 ```java
-@JCurlCommand("curl -X GET https://api.example.com/files/report.pdf --output './download/report.pdf'")
-byte[] downloadToFile(JQuickCurlReq request);
-```
+public interface FileApi {
 
-Return bytes and save them in Java:
+    // Multipart upload: -F 'file=@/path/to/file'
+    @JCurlCommand("curl -X POST https://api.example.com/files -F 'file=@./report.pdf'")
+    String upload(JQuickCurlReq request);
 
-```java
-@JCurlCommand("curl -X GET https://api.example.com/files/report.pdf")
-byte[] download(JQuickCurlReq request);
+    // Upload a file together with normal form fields
+    @JCurlCommand("curl -X POST https://api.example.com/import " +
+            "-F 'userId=1001' -F 'file=@./report.pdf'")
+    String uploadWithForm(JQuickCurlReq request);
 
-byte[] bytes = api.download(new JQuickCurlReq());
-Files.write(Paths.get("./download/report.pdf"), bytes);
-```
-
-### 6. Batch requests
-
-Annotate several no-argument methods in one class with `@JCurlCommand`, then execute them with `JQuickCurlBatchRunner`:
-
-```java
-public class BatchCommands {
-    @JCurlCommand("curl -X GET https://httpbin.org/get")
-    public String first() { return null; }
-
-    @JCurlCommand("curl -X GET https://httpbin.org/uuid")
-    public String second() { return null; }
+    // Download: -o / --output writes the response bytes to a local file
+    @JCurlCommand("curl -X GET https://api.example.com/files/report.pdf --output './download/report.pdf'")
+    byte[] download(JQuickCurlReq request);
 }
-
-JQuickCurlBatchRunner runner = new JQuickCurlBatchRunner();
-List<JQuickCurlResponseBody> results = runner.runCurlCommands(
-        new BatchCommands(), JQuickCurlResponseBody.class);
 ```
 
-### 7. Dynamic proxies and method references
+`-F` accepts several files and can mix them with regular form fields. `--output` writes the response to disk inside the executor; alternatively declare a `byte[]` return type and save the bytes in your own code.
 
-Use `JCurlInvoker.createProxy` for annotated interfaces. Existing methods carrying `@JCurlCommand` can also be invoked through `JCurlInvoker.invoke` with a method reference and an explicit return type.
-
-## Complete Example
-
-The following interface covers GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS, TRACE, file upload, file download, and multipart forms. Replace the example endpoints with your own service.
+### Batch execution
 
 ```java
 import com.github.paohaijiao.anno.JCurlCommand;
-import com.github.paohaijiao.domain.req.JQuickCurlReq;
+import com.github.paohaijiao.responseBody.JQuickCurlResponseBody;
+import com.github.paohaijiao.support.JQuickCurlBatchRunner;
 
-public interface CompleteApi {
-    @JCurlCommand("curl -X GET https://api.example.com/users")
-    String get(JQuickCurlReq request);
+import java.util.List;
 
-    @JCurlCommand("curl -X POST https://api.example.com/users -H 'Content-Type: application/json' -d '{\"name\":\"Ada\"}'")
-    String post(JQuickCurlReq request);
+public class BatchCommands {
 
-    @JCurlCommand("curl -X PUT https://api.example.com/users/1 -H 'Content-Type: application/json' -d '{\"name\":\"Ada Lovelace\"}'")
-    String put(JQuickCurlReq request);
+    @JCurlCommand("curl -X GET https://httpbin.org/get")
+    public String first() {
+        return null;
+    }
 
-    @JCurlCommand("curl -X PATCH https://api.example.com/users/1 -H 'Content-Type: application/json' -d '{\"active\":true}'")
-    String patch(JQuickCurlReq request);
+    @JCurlCommand("curl -X GET https://httpbin.org/uuid")
+    public String second() {
+        return null;
+    }
+}
 
-    @JCurlCommand("curl -X DELETE https://api.example.com/users/1")
-    Void delete(JQuickCurlReq request);
-
-    @JCurlCommand("curl -X HEAD https://api.example.com/users/1")
-    Void head(JQuickCurlReq request);
-
-    @JCurlCommand("curl -X OPTIONS https://api.example.com/users/1")
-    String options(JQuickCurlReq request);
-
-    @JCurlCommand("curl -X TRACE https://api.example.com/trace -H 'Content-Type: text/plain' -d 'trace'")
-    String trace(JQuickCurlReq request);
-
-    @JCurlCommand("curl -X POST https://api.example.com/files -F 'file=@./example.txt'")
-    String upload(JQuickCurlReq request);
-
-    @JCurlCommand("curl -X GET https://api.example.com/files/example.txt --output './download/example.txt'")
-    byte[] download(JQuickCurlReq request);
-
-    @JCurlCommand("curl -X POST https://api.example.com/import -F 'userId=1001' -F 'description=example' -F 'file=@./example.txt'")
-    String uploadWithForm(JQuickCurlReq request);
+class BatchDemo {
+    public static void main(String[] args) throws Exception {
+        JQuickCurlBatchRunner runner = new JQuickCurlBatchRunner();
+        List<JQuickCurlResponseBody> results =
+                runner.runCurlCommands(new BatchCommands(), JQuickCurlResponseBody.class);
+        results.forEach(r -> System.out.println(r.asString()));
+    }
 }
 ```
 
-Invoke the proxy:
+Batch execution scans every public method annotated with `@JCurlCommand` and invokes them in order.
 
-```java
-CompleteApi api = JCurlInvoker.createProxy(CompleteApi.class);
-JQuickCurlReq request = new JQuickCurlReq();
-System.out.println(api.get(request));
-System.out.println(api.post(request));
-byte[] file = api.download(request);
-```
-
-## Advanced Features
-
-### Timeouts, retries, redirects, and connection pooling
-
-`JQuickCurlConfig` is the global configuration singleton. It supports timeouts, connection pools, retries, redirects, and interceptors:
+### Timeouts, connection pool and interceptors
 
 ```java
 import com.github.paohaijiao.config.JQuickCurlConfig;
+import okhttp3.Interceptor;
+
 import java.util.concurrent.TimeUnit;
 
 JQuickCurlConfig.getInstance()
         .connectTimeout(3, TimeUnit.SECONDS)
         .readTimeout(10, TimeUnit.SECONDS)
         .writeTimeout(10, TimeUnit.SECONDS)
+        .connectionPool(50, 5, TimeUnit.MINUTES)
         .maxRetryCount(2)
         .followRedirects(true);
 ```
 
-Use `@JTimeout(connect = ..., read = ..., write = ...)` to override timeout values for an individual method.
-
-### Interceptors
-
-Interceptors use the OkHttp `Interceptor` API. They can add authentication, log requests, or inspect responses:
-
 ```java
-import com.github.paohaijiao.config.JQuickCurlConfig;
-import okhttp3.Interceptor;
-
+// Add a global interceptor, for example a Bearer token
 Interceptor auth = chain -> chain.proceed(
         chain.request().newBuilder()
                 .addHeader("Authorization", "Bearer " + System.getenv("API_TOKEN"))
@@ -406,70 +381,44 @@ Interceptor auth = chain -> chain.proceed(
 JQuickCurlConfig.getInstance().addInterceptor(auth);
 ```
 
-### Batch execution
+`JQuickCurlConfig` is a global singleton that manages timeouts, the connection pool, retries, redirects and interceptors. A single method can override its timeouts with `@JTimeout`.
 
-Call `JQuickCurlBatchRunner.runCurlCommands(Object, Class<T>)` to scan a command class and return its results. Methods must be no-argument methods annotated with `@JCurlCommand`; `@JTimeout` can configure an individual batch command.
+### Implemented curl options
 
-### Proxy factories
+| Category | Supported format | Purpose |
+| --- | --- | --- |
+| Request method | `-X <METHOD>`, `--request <METHOD>` | Select the HTTP method |
+| Headers | `-H 'Name: value'`, `--header 'Name: value'` | Add a request header |
+| Cookies | `-b 'name=value'`, `--cookie`, `-b @file` | Send cookies or load a cookie file |
+| Cookie jar | `-c <file>`, `--cookie-jar <file>` | Persist `Set-Cookie` values to a file |
+| Request data | `-d`, `--data`, `--data-ascii`, `--data-binary`, `--data-raw` | Send a request body |
+| Form encoding | `--data-urlencode 'key=value'` | Send URL-encoded form data |
+| Basic authentication | `-u 'user:password'`, `--user` | Generate a Basic Authorization header |
+| Redirects | `-L`, `--location`, `--max-redirs <N>` | Follow redirects and cap the count |
+| File upload | `-F 'file=@/path/to/file'`, `--form 'key=value'` | Multipart upload or form field |
+| File download | `-o './file'`, `--output './file'` | Write response bytes to a local file |
+| Proxy | `-x 'host:port'`, `--proxy`, `--socks5-hostname` | Use an HTTP or SOCKS5 proxy |
+| Protocol and logging | `--http2`, `-k`, `--insecure`, `-v`, `--verbose`, `-s`, `--silent` | HTTP/2, skip cert checks, verbose or silent output |
 
-- Annotation proxy: `JCurlInvoker.createProxy(Api.class)`.
-- XML proxy: `new JQuickXmlFactory(new JQuickCurlXmlParseFactory(), "apis.xml").createApi(Api.class)`.
-- Method reference: `JCurlInvoker.invoke(Service::method, request, ReturnType.class)`.
+The options above are covered by the parser and the test suite. Verify any unlisted curl option before relying on it.
 
-## Architecture
+## Documentation
 
-```text
-curl string / annotation / XML
-              |
-              v
-      ANTLR lexer + parser       <- curl syntax
-              |
-              v
-      visitor + JContext         <- variables, conditions, request context
-              |
-              v
-      OkHttp transport           <- pool, timeouts, retries, interceptors
-              |
-              v
-      JQuickCurlResponseBody     <- raw response
-              |
-              v
-      response converters        <- String, objects, collections, byte[]
-```
-
-The main modules are `anno` (annotations), `parser` (ANTLR parser), `visitor` (command visitors), `executor` (execution), `xml` (XML proxy), `handler` (dynamic proxy), `result` (response conversion), and `config` (global configuration).
-
-## Release Notes
-
-### 2.1.0
-
-- Refined curl parsing and HTTP request execution.
-- Added or expanded annotation proxies, XML-configured proxies, and method-reference invocation.
-- Supports variable substitution, conditional XML rendering, file upload and download, and batch execution.
-- Supports timeout, retry, redirect, connection-pool, and OkHttp interceptor configuration.
-
-See [Releases](https://github.com/dromara/jquick-curl/releases) and the commit history for additional details.
-
-## License
-
-JQuickCurl is released under the [Apache License 2.0](./LICENSE). When using, modifying, or distributing the project, comply with the license terms, including copyright, patent, and notice requirements.
+- [apis.xml](./src/main/resources/apis.xml) — XML API definition sample.
+- [Jquick-curl.dtd](./src/main/resources/paohaijiao/dtd/Jquick-curl.dtd) — DTD for the XML definition file.
+- [README-CN.md](./README-CN.md) — Simplified Chinese documentation.
+- [Releases](https://github.com/dromara/jquick-curl/releases) — version history and release notes.
+- [Issues](https://github.com/dromara/jquick-curl/issues) — bug reports and feature requests.
 
 ## Contributing
 
-Contributions are welcome:
+Contributions of any kind are welcome.
 
-1. Read [CONTRIBUTING-EN.md](./CONTRIBUTING-EN.md) before making changes.
-2. Include the version, environment, minimal reproduction, and complete error output in an Issue.
-3. Add or update tests before submitting a Pull Request, and keep changes focused.
-4. Never commit secrets, tokens, personal data, or production configuration.
+1. Read [CONTRIBUTING-EN.md](./CONTRIBUTING-EN.md) (or [CONTRIBUTING.md](./CONTRIBUTING.md)) before making changes.
+2. Include the version, environment, minimal reproduction and full error output when opening an issue.
+3. Add or update tests before submitting a pull request, and keep each change focused.
+4. Never commit secrets, tokens, personal data or production configuration.
 
-## Project Ownership and Support
+## License
 
-JQuickCurl is maintained under the [Dromara open-source organization](https://dromara.org/). The main repository is [github.com/dromara/jquick-curl](https://github.com/dromara/jquick-curl).
-
-If JQuickCurl saves you from writing repetitive HTTP request code, please [Star](https://github.com/dromara/jquick-curl) or [Fork](https://github.com/dromara/jquick-curl/fork) the repository. Issues and Pull Requests are also welcome.
-
-## Awesome Java
-
-JQuickCurl is listed in the HTTP Clients section of [Awesome Java](https://github.com/akullpp/awesome-java).
-JQuickCurl is listed in the HTTP Clients section of [Awesome Java](https://github.com/akullpp/awesome-java).
+jquick-curl is released under the [Apache License 2.0](./LICENSE). When using, modifying or distributing the project, comply with the license terms, including copyright, patent and notice requirements.

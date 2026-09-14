@@ -1,233 +1,241 @@
-# JQuickCurl
+<p align="center">
+  <img src="src/main/resources/static/jquick-logo.svg" width="240" alt="jquick-curl logo" />
+</p>
 
-[![GitHub Stars](https://img.shields.io/github/stars/dromara/jquick-curl?style=flat-square)](https://github.com/dromara/jquick-curl/stargazers)
-[![GitHub Forks](https://img.shields.io/github/forks/dromara/jquick-curl?style=flat-square)](https://github.com/dromara/jquick-curl/network/members)
-[![License](https://img.shields.io/github/license/dromara/jquick-curl?style=flat-square)](https://github.com/dromara/jquick-curl/blob/main/LICENSE)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.paohaijiao/jquick-curl?style=flat-square)](https://central.sonatype.com/artifact/io.github.paohaijiao/jquick-curl)
-[![Awesome Java](https://awesome.re/badge.svg)](https://github.com/akullpp/awesome-java)
+<h1 align="center">jquick-curl</h1>
 
-[**简体中文**](./README-CN.md) | [English](./README.md)
+<p align="center">
+  <a href="https://central.sonatype.com/artifact/io.github.paohaijiao/jquick-curl"><img src="https://img.shields.io/maven-central/v/io.github.paohaijiao/jquick-curl.svg?style=flat-square&label=Maven%20Central" alt="Maven Central" /></a>
+  <a href="https://github.com/dromara/jquick-curl/stargazers"><img src="https://img.shields.io/github/stars/dromara/jquick-curl.svg?style=flat-square&logo=github&label=Stars" alt="GitHub Stars" /></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/github/license/dromara/jquick-curl.svg?style=flat-square&label=License" alt="License" /></a>
+  <a href="#快速开始"><img src="https://img.shields.io/badge/JDK-8%2B-orange.svg?style=flat-square" alt="JDK 8+" /></a>
+  <a href="https://github.com/akullpp/awesome-java"><img src="https://awesome.re/mentioned-badge.svg" alt="Awesome Java" /></a>
+</p>
 
-JQuickCurl 是一款面向 Java 的 curl 命令式 HTTP 客户端框架：把浏览器、Postman 或终端中可复用的原生 curl 命令直接解析为 Java 请求，支持注解与 XML 双配置、变量替换、条件渲染、文件传输、批量执行和动态代理调用。
+<p align="center">
+  <a href="./README.md">English</a> | <b>简体中文</b>
+</p>
 
-> 归属 [Dromara](https://dromara.org/)，主仓库：[dromara/jquick-curl](https://github.com/dromara/jquick-curl)。
+**jquick-curl** 是一款面向 Java 的轻量 HTTP 客户端，原生模仿 curl 风格 API：把一条普通的 curl 命令写成 Java 方法即可发起请求。命令由 ANTLR 解析，并通过带连接池的高性能传输层执行，因此无需手写任何请求构建代码。jquick-curl 是 JQuick 生态的子项目，由 [Dromara](https://dromara.org/) 开源社区维护。
 
-## 目录
+⭐ 本项目已被 [Awesome Java](https://github.com/akullpp/awesome-java) 列表收录。
 
-- [核心优势](#核心优势)
-- [适用场景](#适用场景)
-- [支持的 curl 命令格式](#支持的-curl-命令格式)
-- [快速开始](#快速开始)
-- [核心功能详解](#核心功能详解)
-- [完整使用示例](#完整使用示例)
-- [高级特性](#高级特性)
-- [项目架构设计](#项目架构设计)
-- [更新日志与版本特性](#更新日志与版本特性)
-- [开源协议](#开源协议)
-- [贡献指南](#贡献指南)
-- [项目归属与支持](#项目归属与支持)
-- [Awesome Java](#awesome-java)
+## 特性
 
-## 核心优势
-
-| 对比维度 | JQuickCurl | OkHttp / RestTemplate / HttpClient |
-| --- | --- | --- |
-| 请求表达 | 直接复用原生 curl 命令 | 需要手写 Request、参数、Header 或客户端配置 |
-| 调试协作 | 后端、前端、测试可共享同一条 curl | 常需要在不同表达方式之间转换 |
-| 配置方式 | `@JCurlCommand` 注解 + XML 配置 | 以 Java API、Builder 或 Spring 配置为主 |
-| 动态请求 | 原生命令中使用变量和 XML 条件语法 | 通常需要手动拼装 URL、Body 和条件分支 |
-| API 封装 | 接口 + 动态代理即可调用 | 需要手动封装服务类或模板代码 |
-| 文件与方法 | 覆盖常用 HTTP 方法、multipart、下载 | 能力强，但请求描述与业务代码耦合度更高 |
-
-核心创新是 **原生 curl 命令解析**、**零手写请求构建代码** 和 **XML 动态条件语法**。JQuickCurl 底层使用 OkHttp 执行网络请求，并通过 ANTLR 解析 curl 语法，不是调用系统中的 curl 进程。
-
-## 适用场景
-
-- 将 Postman、浏览器开发者工具或接口文档中的 curl 快速迁移到 Java。
-- 微服务、支付、数据采集、第三方开放平台等大量 HTTP 集成场景。
-- 需要把请求定义与 Java 业务代码分离的配置化 API 客户端。
-- 需要统一处理认证变量、环境域名、条件 Header 和请求体的项目。
-- 文件上传、批量接口调用、文件下载和接口自动化测试。
-
-
-## 三、JQuick 生态导航
-
-> 点击下表即可跳转到对应子项目。所有项目共享 `io.github.paohaijiao` groupId。
-> 协议：Apache-2.0（✅ 免费商用），**除 jquick-pdf 为 AGPL-3.0（⚠️ 商用需授权）**。
-
-| # | 项目名称             | 仓库地址                                                                  | 简介                                        | 开源协议 |
-|---|------------------|-----------------------------------------------------------------------|-------------------------------------------|---------|
-| 1 | **jquick-sql** ⭐ | [paohaijiao/jquick-sql](https://github.com/paohaijiao/jquick-sql)     | 嵌入式 SQL 查询引擎（当前项目）                        | Apache-2.0 |
-| 2 | jquick-hub       | [paohaijiao/jquick-hub](https://github.com/paohaijiao/jquick-hub)     | 基于 Netty 的轻量级 tcp 网关                      | Apache-2.0 |
-| 3 | jquick-excel     | [paohaijiao/jquick-excel](https://github.com/paohaijiao/jquick-excel) | Excel 读写工具；大文件 SAX 流式；老项目 POI 3.x 兼容      | Apache-2.0 |
-| 4 | jquick-pdf       | [paohaijiao/jquick-pdf](https://github.com/paohaijiao/jquick-pdf)     | 基于 iText7 的 PDF 处理（模板渲染 / 签章 / 水印 / 合并拆分） | **AGPL-3.0 ⚠️** |
-| 5 | jquick-asm       | [paohaijiao/jquick-asm](https://github.com/paohaijiao/jquick-asm)     | ASM 9.x 字节码增强；AOP 代理 / 动态 Bean / 类转换      | Apache-2.0 |
-| 6 | jquick-curl      | [paohaijiao/jquick-curl](https://github.com/paohaijiao/jquick-curl)   | HTTP 客户端（链式 Fluent API / 连接池 / 断点续传 / 重试） | Apache-2.0 |
-| 7 | jquick-java      | [paohaijiao/jquick-java](https://github.com/paohaijiao/jquick-java)   | ANTLR4 脚本引擎 + XML 动态代理；规则引擎热加载            | Apache-2.0 |
-| 8 | jquick-json      | [paohaijiao/jquick-json](https://github.com/paohaijiao/jquick-json)   | JSON 读/写                                  | Apache-2.0 |
-| 9 | jquick-path      | [paohaijiao/jquick-path](https://github.com/paohaijiao/jquick-path)   | Path 操作工具箱                                | Apache-2.0 |
-
-> 📌 **跨项目组合示例**：jquick-sql + jquick-curl → 将 REST JSON 数据注册为内存表后联邦查询；jquick-sql + jquick-excel → 读取 Excel 行后与业务表 JOIN；更多见各项目 README。
-
----
-
+- **原生 curl 风格 API** —— 用 curl 命令描述请求，用 Java 方法调用。
+- **注解与 XML 双配置** —— 使用 `@JCurlCommand` 声明请求，或集中维护在 `apis.xml` 中。
+- **动态代理客户端** —— `JCurlInvoker.createProxy(UserApi.class)` 把接口变成可用的客户端。
+- **变量替换** —— 运行时从请求中解析 `${name}` / `#{name}` 占位符。
+- **条件渲染** —— 仅当 XML 中的 `<if test="...">` 表达式成立时，才拼入对应的 header 或选项。
+- **Cookie 支持** —— 手动设置 cookie、基于文件的 cookie 存储、`Set-Cookie` 持久化。
+- **HTTP 方法** —— `GET`、`POST`、`PUT`、`PATCH`、`DELETE`、`HEAD`、`OPTIONS`、`TRACE`。
+- **文件传输** —— 通过 `-F` 做 multipart 上传，通过 `-o` / `--output` 下载。
+- **批量执行** —— 一次调用执行类中所有 `@JCurlCommand` 方法。
+- **超时、重试、重定向与连接池** —— 通过 `JQuickCurlConfig` 统一配置。
+- **拦截器** —— 全局添加鉴权、日志或请求预处理逻辑。
+- **代理与 SSL** —— 支持 HTTP / SOCKS5 代理，`-k` / `--insecure` 可跳过证书校验。
 
 ## 快速开始
 
-### Maven 依赖
-
-当前项目版本为 `2.2.0`：
+### 1. Maven 依赖
 
 ```xml
 <dependency>
     <groupId>io.github.paohaijiao</groupId>
     <artifactId>jquick-curl</artifactId>
-    <version>${version}</version>
+    <version>2.5.0</version>
 </dependency>
 ```
 
-### 最简示例
+### 2. 基础 GET 请求
 
-`@JCurlCommand` 用于在接口方法上声明 curl。代理对象负责解析、执行并把响应转换为返回类型。文档示例与稳定能力说明仅覆盖已验证的 8 类常用 HTTP 方法：GET、POST、PUT、PATCH、DELETE、HEAD、OPTIONS 和 TRACE。
+在接口方法上声明 curl 命令，然后创建代理并调用即可。
 
 ```java
 import com.github.paohaijiao.anno.JCurlCommand;
 import com.github.paohaijiao.domain.req.JQuickCurlReq;
 import com.github.paohaijiao.executor.JCurlInvoker;
 
-public interface EchoApi {
+public interface UserApi {
+
+    // GET request: returns the response body as a String
     @JCurlCommand("curl -X GET https://httpbin.org/get")
-    String get(JQuickCurlReq request);
+    String list(JQuickCurlReq request);
 }
 
-class Application {
+class GetDemo {
     public static void main(String[] args) throws Exception {
-        EchoApi api = JCurlInvoker.createProxy(EchoApi.class);
-        String response = api.get(new JQuickCurlReq());
-        System.out.println(response);
+        UserApi api = JCurlInvoker.createProxy(UserApi.class);
+        String body = api.list(new JQuickCurlReq());
+        System.out.println(body);
     }
 }
 ```
 
-## 支持的 curl 命令格式
-
-JQuickCurl 解析的是以 `curl` 开头的命令，并通过 `-X` 或 `--request` 指定请求方法。当前测试用例已覆盖以下 8 类方法：`GET`、`POST`、`PUT`、`PATCH`、`DELETE`、`HEAD`、`OPTIONS`、`TRACE`。
-
-### 请求方法
-
-```bash
-# GET：查询资源，通常不带请求体
-curl -X GET https://api.example.com/users
-
-# POST：创建资源或提交 JSON
-curl -X POST https://api.example.com/users \
-  -H 'Content-Type: application/json' \
-  -d '{"name":"Ada"}'
-
-# PUT：全量更新资源
-curl -X PUT https://api.example.com/users/1 \
-  -H 'Content-Type: application/json' \
-  -d '{"name":"Ada Lovelace"}'
-
-# PATCH：局部更新资源
-curl -X PATCH https://api.example.com/users/1 \
-  -H 'Content-Type: application/json' \
-  -d '{"active":true}'
-
-# DELETE：删除资源
-curl -X DELETE https://api.example.com/users/1
-
-# HEAD：仅获取响应头
-curl -X HEAD https://api.example.com/users/1
-
-# OPTIONS：查询服务支持的方法
-curl -X OPTIONS https://api.example.com/users/1
-
-# TRACE：回显请求，用于调试；当前执行器按无请求体方法处理
-curl -X TRACE https://api.example.com/trace
-```
-
-### 已实现的 curl 选项
-
-| 分类 | 支持格式 | 用法 |
-| --- | --- | --- |
-| 请求方法 | `-X <METHOD>`、`--request <METHOD>` | 指定上述 HTTP 方法 |
-| 请求头 | `-H 'Name: value'`、`--header 'Name: value'` | 添加请求头，如 `Content-Type` |
-| 请求数据 | `-d 'data'`、`--data 'data'`、`--data-ascii`、`--data-binary`、`--data-raw` | 发送请求体 |
-| **Cookie** | **`-b <data>`、`--cookie <data>`、`-c <file>`、`--cookie-jar <file>`** | **发送 Cookie 或保存响应 Cookie 到文件** |
-| 表单编码 | `--data-urlencode 'key=value'` | 发送 URL 编码表单数据 |
-| 基础认证 | `-u 'user:password'`、`--user 'user:password'` | 自动生成 Basic Authorization |
-| 重定向 | `-L`、`--location`、`--max-redirs <N>` | 跟随重定向并配置最大次数 |
-| 文件上传 | `-F 'file=@/path/to/file'`、`--form 'key=value'` | multipart 文件或普通表单字段 |
-| 文件下载 | `-o './file'`、`--output './file'` | 将响应字节写入指定文件 |
-| 代理 | `-x 'host:port'`、`--proxy 'host:port'`、`--socks5-hostname 'host:port'` | 使用 HTTP 或 SOCKS5 代理 |
-| 协议与日志 | `--http2`、`-k`、`--insecure`、`-v`、`--verbose`、`-s`、`--silent` | HTTP/2、不校验证书、详细或静默输出 |
-
-### 在 Java 中使用
-
-将命令放入 `@JCurlCommand`，再通过动态代理执行。返回值可声明为 `String`、业务对象、`JResult`、`byte[]` 或 `Void`：
+### 3. 基础 POST 请求
 
 ```java
-public interface UserApi {
-    @JCurlCommand("curl -X GET https://api.example.com/users")
-    String get(JQuickCurlReq request);
+import com.github.paohaijiao.anno.JCurlCommand;
+import com.github.paohaijiao.domain.req.JQuickCurlReq;
+import com.github.paohaijiao.executor.JCurlInvoker;
 
-    @JCurlCommand("curl -X POST https://api.example.com/users -H 'Content-Type: application/json' -d '{\"name\":\"Ada\"}'")
+public interface OrderApi {
+
+    // POST request with a JSON body
+    @JCurlCommand("curl -X POST https://httpbin.org/post " +
+            "-H 'Content-Type: application/json' " +
+            "-d '{\"sku\":\"A-1001\",\"count\":2}'")
     String create(JQuickCurlReq request);
 }
 
-UserApi api = JCurlInvoker.createProxy(UserApi.class);
-String result = api.get(new JQuickCurlReq());
+class PostDemo {
+    public static void main(String[] args) throws Exception {
+        OrderApi api = JCurlInvoker.createProxy(OrderApi.class);
+        String body = api.create(new JQuickCurlReq());
+        System.out.println(body);
+    }
+}
 ```
-### Cookie 支持
 
-JQuickCurl 支持 curl 标准的 Cookie 发送和保存功能：
+### 4. Cookie 完整用法
 
-**发送 Cookie**
+jquick-curl 实现了原生 curl 的 cookie 选项：使用 `-b` / `--cookie` 发送 cookie，使用 `-c` / `--cookie-jar` 持久化 cookie。所有 cookie 会合并进同一个 `Cookie` 请求头，响应中的每个 `Set-Cookie` 都可以写入 Netscape 格式的 cookie 文件，该文件即充当持久化的 cookie 存储（CookieStore）。
 
-- **字符串方式**：使用 `-b "name1=value1; name2=value2"` 直接发送 Cookie
-- **文件方式**：使用 `-b cookies.txt` 从 Netscape/Mozilla 格式的文件读取 Cookie
+#### 4.1 手动设置单个 Cookie
+
+```java
+import com.github.paohaijiao.anno.JCurlCommand;
+import com.github.paohaijiao.domain.req.JQuickCurlReq;
+import com.github.paohaijiao.executor.JCurlInvoker;
+
+public interface CookieApi {
+
+    // Single cookie: -b / --cookie 'name=value'
+    @JCurlCommand("curl -X GET https://httpbin.org/cookies -b 'sessionId=abc123'")
+    String withSingleCookie(JQuickCurlReq request);
+}
+
+class SingleCookieDemo {
+    public static void main(String[] args) throws Exception {
+        CookieApi api = JCurlInvoker.createProxy(CookieApi.class);
+        System.out.println(api.withSingleCookie(new JQuickCurlReq()));
+    }
+}
+```
+
+#### 4.2 手动设置多个 Cookie
 
 ```java
 public interface CookieApi {
-    // 发送 Cookie 字符串
-    @JCurlCommand("curl -X GET https://api.example.com/me -b \"session=abc123; user=test\"")
-    String getWithCookie(JQuickCurlReq request);
 
-    // 从文件读取 Cookie
-    @JCurlCommand("curl -X GET https://api.example.com/me -b cookies.txt")
-    String getWithCookieFile(JQuickCurlReq request);
-}
-public interface CookieSaveApi {
-    @JCurlCommand("curl -X POST https://api.example.com/login -d 'username=admin&password=123' -c cookies.txt")
-    String loginAndSaveCookie(JQuickCurlReq request);
+    // Multiple cookies: separate them with a semicolon inside one -b option
+    @JCurlCommand("curl -X GET https://httpbin.org/cookies " +
+            "-b 'sessionId=abc123; theme=dark; lang=en'")
+    String withMultipleCookies(JQuickCurlReq request);
+
+    // Equivalent form: set the Cookie header directly with -H
+    @JCurlCommand("curl -X GET https://httpbin.org/cookies " +
+            "-H 'Cookie: sessionId=abc123; theme=dark; lang=en'")
+    String withCookieHeader(JQuickCurlReq request);
 }
 ```
-> 注意：JQuickCurl 不是系统 curl 的完整替代品。以上是当前解析器和测试用例确认过的格式；未列出的 curl 选项或 HTTP 方法，请先通过测试验证。`CONNECT` 虽然存在于内部枚举中，但当前不作为稳定文档能力承诺。
 
-## 核心功能详解
+多个 cookie 之间用 `;` 分隔。`-b` 与 `-H 'Cookie: ...'` 最终都会写入同一个 `Cookie` 请求头，同名 cookie 会合并而不是直接覆盖。
 
-### 1. 注解方式
-
-适合请求数量较少、请求定义与代码紧密关联的场景：
+#### 4.3 从 cookie 文件自动携带 Cookie
 
 ```java
-public interface UserApi {
-    @JCurlCommand("curl -X GET 'https://api.example.com/users/${id}'")
-    String getUser(JQuickCurlReq request);
-}
+public interface CookieApi {
 
-JQuickCurlReq request = new JQuickCurlReq();
-request.put("id", 1001);
-UserApi api = JCurlInvoker.createProxy(UserApi.class);
-String body = api.getUser(request);
+    // Load cookies from a Netscape / Mozilla cookie file: -b @file
+    @JCurlCommand("curl -X GET https://httpbin.org/cookies -b @./cookies.txt")
+    String withJarFile(JQuickCurlReq request);
+}
 ```
 
-`@JCurlCommand` 还支持 `execute`、`expectedStatus`、`expectedBusinessStatus` 和 `validationScript` 等执行与校验属性。
+`-b @cookies.txt` 会读取 Netscape 格式的 cookie 文件并自动附加到请求，这是 jquick-curl 跨请求保持 cookie 的方式。注意文件名前需要加 `@` 前缀。
 
-### 2. XML 配置方式
+#### 4.4 从响应中提取 Set-Cookie
 
-适合集中维护大量接口，将 curl、返回类型和 Java 接口解耦。XML 使用项目内置 DTD：
+需要读取响应头时，把返回类型声明为 `JQuickCurlResponseBody` 而不是 `String`。
+
+```java
+import com.github.paohaijiao.anno.JCurlCommand;
+import com.github.paohaijiao.domain.req.JQuickCurlReq;
+import com.github.paohaijiao.executor.JCurlInvoker;
+import com.github.paohaijiao.responseBody.JQuickCurlResponseBody;
+
+import java.util.List;
+
+public interface LoginApi {
+
+    // Return the raw response body object to access headers
+    @JCurlCommand("curl -X GET 'https://httpbin.org/cookies/set?sessionId=abc123'")
+    JQuickCurlResponseBody setCookie(JQuickCurlReq request);
+}
+
+class ReadSetCookieDemo {
+    public static void main(String[] args) throws Exception {
+        LoginApi api = JCurlInvoker.createProxy(LoginApi.class);
+        JQuickCurlResponseBody response = api.setCookie(new JQuickCurlReq());
+
+        // First Set-Cookie header
+        String first = response.header("Set-Cookie");
+        // All Set-Cookie headers (redirects may return several)
+        List<String> all = response.headers("Set-Cookie");
+        // Response payload
+        String body = response.asString();
+
+        System.out.println(first);
+        System.out.println(all);
+        System.out.println(body);
+    }
+}
+```
+
+#### 4.5 Cookie 持久化与登录态复用
+
+```java
+import com.github.paohaijiao.anno.JCurlCommand;
+import com.github.paohaijiao.domain.req.JQuickCurlReq;
+import com.github.paohaijiao.executor.JCurlInvoker;
+import com.github.paohaijiao.responseBody.JQuickCurlResponseBody;
+
+public interface SessionApi {
+
+    // Step 1: sign in and save every Set-Cookie into cookies.txt (-c / --cookie-jar)
+    @JCurlCommand("curl -X POST https://httpbin.org/post " +
+            "-H 'Content-Type: application/json' " +
+            "-d '{\"user\":\"ada\",\"password\":\"secret\"}' " +
+            "-c ./cookies.txt")
+    JQuickCurlResponseBody login(JQuickCurlReq request);
+
+    // Step 2: reuse the persisted cookies on the next request (-b @file)
+    @JCurlCommand("curl -X GET https://httpbin.org/cookies -b @./cookies.txt")
+    String profile(JQuickCurlReq request);
+}
+
+class SessionDemo {
+    public static void main(String[] args) throws Exception {
+        SessionApi api = JCurlInvoker.createProxy(SessionApi.class);
+        JQuickCurlReq request = new JQuickCurlReq();
+
+        // Writes ./cookies.txt in Netscape format
+        api.login(request);
+
+        // Cookies from the file are attached automatically
+        System.out.println(api.profile(request));
+    }
+}
+```
+
+`-c` / `--cookie-jar` 会把每个 `Set-Cookie` 以 Netscape 格式（制表符分隔的 7 列）写入指定文件，后续请求用 `-b @文件` 复用，即可在多次调用之间保持登录态。请勿把真实的 cookie 文件提交到代码仓库。
+
+## 更多示例
+
+### XML 配置
+
+把接口定义集中到 XML 中，让请求模板与 Java 业务代码彻底分离。
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -235,55 +243,51 @@ String body = api.getUser(request);
         "classpath:paohaijiao/dtd/Jquick-curl.dtd">
 <curls namespace="com.example.UserApi">
     <curl name="getUser" returnClass="java.lang.String">
-        curl -X GET https://api.example.com/users/#{id}
+        curl -X GET https://api.example.com/users/#{id} -b @./cookies.txt
     </curl>
 </curls>
 ```
 
-Java 接口的方法名必须与 `<curl name="...">` 一致：
-
 ```java
 import com.github.paohaijiao.domain.req.JQuickCurlReq;
+import com.github.paohaijiao.xml.JQuickCurlXmlParseFactory;
+import com.github.paohaijiao.xml.factory.JQuickFactory;
+import com.github.paohaijiao.xml.factory.JQuickXmlFactory;
+import com.github.paohaijiao.xml.handler.JQuickParseHandler;
 
 public interface UserApi {
     String getUser(JQuickCurlReq request);
 }
+
+class XmlDemo {
+    public static void main(String[] args) throws Exception {
+        JQuickParseHandler parser = new JQuickCurlXmlParseFactory();
+        JQuickFactory factory = new JQuickXmlFactory(parser, "apis.xml");
+        UserApi api = factory.createApi(UserApi.class);
+        System.out.println(api.getUser(new JQuickCurlReq()));
+    }
+}
 ```
 
-加载 XML 并创建代理：
+`<curl name="...">` 的属性值必须与 Java 方法名一致，`#{name}` 是 XML 代理使用的变量占位符。
 
-```java
-import com.github.paohaijiao.xml.JQuickCurlXmlParseFactory;
-import com.github.paohaijiao.xml.factory.JQuickXmlFactory;
-import com.github.paohaijiao.xml.handler.JQuickParseHandler;
-
-JQuickParseHandler parser = new JQuickCurlXmlParseFactory();
-JQuickXmlFactory factory = new JQuickXmlFactory(parser, "apis.xml");
-UserApi api = factory.createApi(UserApi.class);
-```
-
-### 3. 变量替换
-
-- 注解代理结合 `JQuickCurlReq` 时，使用 `${name}` 从请求参数容器取值。
-- XML 代理支持上下文变量，常用 `#{name}`，并可与方法参数或请求上下文绑定。
+### 变量替换与条件渲染
 
 ```java
 public interface AuthApi {
-    @JCurlCommand("curl -u ${user}:${password} https://api.example.com/me")
+
+    // ${...} placeholders are resolved from JQuickCurlReq
+    @JCurlCommand("curl -X GET https://api.example.com/me -u ${user}:${password}")
     String currentUser(JQuickCurlReq request);
 }
-
-JQuickCurlReq request = new JQuickCurlReq();
-request.put("user", "demo");
-request.put("password", "secret");
-String result = JCurlInvoker.createProxy(AuthApi.class).currentUser(request);
 ```
 
-请勿把真实密码、Token 或私钥提交到源码和 XML；建议在运行时注入变量。
-
-### 4. XML 条件语法
-
-XML curl 文本中可使用 `<if test="...">...</if>` 条件片段，条件成立时才渲染其中的 Header、参数或命令选项：
+```java
+JQuickCurlReq request = new JQuickCurlReq();
+request.put("user", "ada");
+request.put("password", System.getenv("API_PASSWORD"));
+String me = JCurlInvoker.createProxy(AuthApi.class).currentUser(request);
+```
 
 ```xml
 <curl name="search" returnClass="java.lang.String">
@@ -292,136 +296,83 @@ XML curl 文本中可使用 `<if test="...">...</if>` 条件片段，条件成�
 </curl>
 ```
 
-条件表达式应使用 XML 可解析的属性名和上下文变量。复杂条件建议拆分为多个 `<if>`，保持请求定义可读。
+`${...}` 用于注解代理，`#{...}` 用于 XML 代理；`<if>` 中的 header 只在表达式成立时才会拼入命令。敏感信息请通过变量注入，不要硬编码在命令里。
 
-### 5. 文件上传与下载
-
-- `-F "file=@/path/to/file"`：单文件上传。
-- 多个 `-F`：同名字段上传多个文件或混合普通表单字段。
-- `--output` / `-o`：执行器读取响应字节并写入命令指定的本地文件。
-- 如果不使用 `--output`，Java 方法可以声明返回 `byte[]`，再由业务代码保存文件。
-
-直接由 curl 命令写入文件：
+### 文件上传与下载
 
 ```java
-@JCurlCommand("curl -X GET https://api.example.com/files/report.pdf --output './download/report.pdf'")
-byte[] downloadToFile(JQuickCurlReq request);
-```
+public interface FileApi {
 
-返回字节数组后由 Java 保存：
+    // Multipart upload: -F 'file=@/path/to/file'
+    @JCurlCommand("curl -X POST https://api.example.com/files -F 'file=@./report.pdf'")
+    String upload(JQuickCurlReq request);
 
-```java
-@JCurlCommand("curl -X GET https://api.example.com/files/report.pdf")
-byte[] download(JQuickCurlReq request);
+    // Upload a file together with normal form fields
+    @JCurlCommand("curl -X POST https://api.example.com/import " +
+            "-F 'userId=1001' -F 'file=@./report.pdf'")
+    String uploadWithForm(JQuickCurlReq request);
 
-byte[] bytes = api.download(new JQuickCurlReq());
-Files.write(Paths.get("./download/report.pdf"), bytes);
-```
-
-### 6. 批量请求
-
-给同一个类中的多个无参方法标注 `@JCurlCommand`，即可通过 `JQuickCurlBatchRunner` 批量执行：
-
-```java
-public class BatchCommands {
-    @JCurlCommand("curl -X GET https://httpbin.org/get")
-    public String first() { return null; }
-
-    @JCurlCommand("curl -X GET https://httpbin.org/uuid")
-    public String second() { return null; }
+    // Download: -o / --output writes the response bytes to a local file
+    @JCurlCommand("curl -X GET https://api.example.com/files/report.pdf --output './download/report.pdf'")
+    byte[] download(JQuickCurlReq request);
 }
-
-JQuickCurlBatchRunner runner = new JQuickCurlBatchRunner();
-List<JQuickCurlResponseBody> results = runner.runCurlCommands(
-        new BatchCommands(), JQuickCurlResponseBody.class);
 ```
 
-### 7. 动态代理与 Lambda/方法引用调用
+`-F` 支持同时上传多个文件，并可与普通表单字段混用；`--output` 由执行器直接写入磁盘，也可以声明 `byte[]` 返回类型后在业务代码中自行保存。
 
-注解接口通过 `JCurlInvoker.createProxy` 调用；已有带 `@JCurlCommand` 的方法也可以使用 `JCurlInvoker.invoke` 和方法引用执行，并指定返回类型。
-
-## 完整使用示例
-
-下面的接口覆盖 GET、POST、PUT、PATCH、DELETE、HEAD、OPTIONS、TRACE、文件上传、文件下载和混合表单参数。示例地址仅用于演示，请替换为实际服务地址。
+### 批量执行
 
 ```java
 import com.github.paohaijiao.anno.JCurlCommand;
-import com.github.paohaijiao.domain.req.JQuickCurlReq;
+import com.github.paohaijiao.responseBody.JQuickCurlResponseBody;
+import com.github.paohaijiao.support.JQuickCurlBatchRunner;
 
-public interface CompleteApi {
-    @JCurlCommand("curl -X GET https://api.example.com/users")
-    String get(JQuickCurlReq request);
+import java.util.List;
 
-    @JCurlCommand("curl -X POST https://api.example.com/users -H 'Content-Type: application/json' -d '{\"name\":\"Ada\"}'")
-    String post(JQuickCurlReq request);
+public class BatchCommands {
 
-    @JCurlCommand("curl -X PUT https://api.example.com/users/1 -H 'Content-Type: application/json' -d '{\"name\":\"Ada Lovelace\"}'")
-    String put(JQuickCurlReq request);
+    @JCurlCommand("curl -X GET https://httpbin.org/get")
+    public String first() {
+        return null;
+    }
 
-    @JCurlCommand("curl -X PATCH https://api.example.com/users/1 -H 'Content-Type: application/json' -d '{\"active\":true}'")
-    String patch(JQuickCurlReq request);
+    @JCurlCommand("curl -X GET https://httpbin.org/uuid")
+    public String second() {
+        return null;
+    }
+}
 
-    @JCurlCommand("curl -X DELETE https://api.example.com/users/1")
-    Void delete(JQuickCurlReq request);
-
-    @JCurlCommand("curl -X HEAD https://api.example.com/users/1")
-    Void head(JQuickCurlReq request);
-
-    @JCurlCommand("curl -X OPTIONS https://api.example.com/users/1")
-    String options(JQuickCurlReq request);
-
-    @JCurlCommand("curl -X TRACE https://api.example.com/trace -H 'Content-Type: text/plain' -d 'trace'")
-    String trace(JQuickCurlReq request);
-
-    @JCurlCommand("curl -X POST https://api.example.com/files -F 'file=@./example.txt'")
-    String upload(JQuickCurlReq request);
-
-    @JCurlCommand("curl -X GET https://api.example.com/files/example.txt --output './download/example.txt'")
-    byte[] download(JQuickCurlReq request);
-
-    @JCurlCommand("curl -X POST https://api.example.com/import -F 'userId=1001' -F 'description=example' -F 'file=@./example.txt'")
-    String uploadWithForm(JQuickCurlReq request);
+class BatchDemo {
+    public static void main(String[] args) throws Exception {
+        JQuickCurlBatchRunner runner = new JQuickCurlBatchRunner();
+        List<JQuickCurlResponseBody> results =
+                runner.runCurlCommands(new BatchCommands(), JQuickCurlResponseBody.class);
+        results.forEach(r -> System.out.println(r.asString()));
+    }
 }
 ```
 
-调用方式：
+批量执行会扫描目标类中所有带 `@JCurlCommand` 的公开方法，并按顺序依次调用。
 
-```java
-CompleteApi api = JCurlInvoker.createProxy(CompleteApi.class);
-JQuickCurlReq request = new JQuickCurlReq();
-System.out.println(api.get(request));
-System.out.println(api.post(request));
-byte[] file = api.download(request);
-```
-
-## 高级特性
-
-### 超时、重试、重定向与连接池
-
-`JQuickCurlConfig` 是全局配置单例，支持超时、连接池、失败重试、重定向和拦截器配置：
+### 超时、连接池与拦截器
 
 ```java
 import com.github.paohaijiao.config.JQuickCurlConfig;
+import okhttp3.Interceptor;
+
 import java.util.concurrent.TimeUnit;
 
 JQuickCurlConfig.getInstance()
         .connectTimeout(3, TimeUnit.SECONDS)
         .readTimeout(10, TimeUnit.SECONDS)
         .writeTimeout(10, TimeUnit.SECONDS)
+        .connectionPool(50, 5, TimeUnit.MINUTES)
         .maxRetryCount(2)
         .followRedirects(true);
 ```
 
-方法级别也可使用 `@JTimeout(connect = ..., read = ..., write = ...)` 覆盖超时设置。
-
-### 拦截器
-
-拦截器采用 OkHttp `Interceptor`，可统一记录日志、注入请求头或处理响应：
-
 ```java
-import com.github.paohaijiao.config.JQuickCurlConfig;
-import okhttp3.Interceptor;
-
+// Add a global interceptor, for example a Bearer token
 Interceptor auth = chain -> chain.proceed(
         chain.request().newBuilder()
                 .addHeader("Authorization", "Bearer " + System.getenv("API_TOKEN"))
@@ -430,69 +381,44 @@ Interceptor auth = chain -> chain.proceed(
 JQuickCurlConfig.getInstance().addInterceptor(auth);
 ```
 
-### 批量执行
+`JQuickCurlConfig` 是全局单例配置，统一管理超时、连接池、重试、重定向与拦截器；单个方法的超时可用 `@JTimeout` 覆盖。
 
-使用 `JQuickCurlBatchRunner.runCurlCommands(Object, Class<T>)` 扫描命令类并返回结果列表；需要方法无参且标注 `@JCurlCommand`。`@JTimeout` 可用于单个批量命令。
+### 已支持的 curl 选项
 
-### 代理工厂
+| 类别 | 支持的写法 | 用途 |
+| --- | --- | --- |
+| 请求方法 | `-X <METHOD>`、`--request <METHOD>` | 指定 HTTP 方法 |
+| 请求头 | `-H 'Name: value'`、`--header 'Name: value'` | 添加请求头 |
+| Cookie | `-b 'name=value'`、`--cookie`、`-b @file` | 发送 cookie 或加载 cookie 文件 |
+| Cookie 存储 | `-c <file>`、`--cookie-jar <file>` | 把 `Set-Cookie` 持久化到文件 |
+| 请求数据 | `-d`、`--data`、`--data-ascii`、`--data-binary`、`--data-raw` | 发送请求体 |
+| 表单编码 | `--data-urlencode 'key=value'` | 发送 URL 编码表单数据 |
+| Basic 认证 | `-u 'user:password'`、`--user` | 生成 Basic Authorization 请求头 |
+| 重定向 | `-L`、`--location`、`--max-redirs <N>` | 跟随重定向并限制次数 |
+| 文件上传 | `-F 'file=@/path/to/file'`、`--form 'key=value'` | multipart 上传或普通表单字段 |
+| 文件下载 | `-o './file'`、`--output './file'` | 把响应字节写入本地文件 |
+| 代理 | `-x 'host:port'`、`--proxy`、`--socks5-hostname` | 使用 HTTP 或 SOCKS5 代理 |
+| 协议与日志 | `--http2`、`-k`、`--insecure`、`-v`、`--verbose`、`-s`、`--silent` | HTTP/2、跳过证书校验、详细或静默输出 |
 
-- 注解代理：`JCurlInvoker.createProxy(Api.class)`。
-- XML 代理：`new JQuickXmlFactory(new JQuickCurlXmlParseFactory(), "apis.xml").createApi(Api.class)`。
-- 方法引用：`JCurlInvoker.invoke(Service::method, request, ReturnType.class)`。
+以上选项均已由解析器与测试用例覆盖；未列出的 curl 选项请先验证后再使用。
 
-## 项目架构设计
+## 文档
 
-```text
-curl 字符串 / 注解 / XML
-          |
-          v
-  ANTLR Lexer + Parser       <- 解析 curl 语法
-          |
-          v
-  Visitor + JContext         <- 变量、条件和请求上下文
-          |
-          v
-  OkHttp 执行层              <- 连接池、超时、重试、拦截器
-          |
-          v
-  JQuickCurlResponseBody     <- 原始响应
-          |
-          v
-  ResponseConvert / ResultFactory <- String、对象、集合、byte[] 等
-```
+- [apis.xml](./src/main/resources/apis.xml) —— XML 接口定义示例。
+- [Jquick-curl.dtd](./src/main/resources/paohaijiao/dtd/Jquick-curl.dtd) —— XML 定义文件的 DTD。
+- [README.md](./README.md) —— English documentation.
+- [Releases](https://github.com/dromara/jquick-curl/releases) —— 版本历史与更新说明。
+- [Issues](https://github.com/dromara/jquick-curl/issues) —— 问题反馈与功能建议。
 
-核心模块包括 `anno`（注解）、`parser`（ANTLR 解析器）、`visitor`（命令访问器）、`executor`（执行器）、`xml`（XML 代理）、`handler`（动态代理）、`result`（响应转换）和 `config`（全局配置）。
+## 贡献
 
-## 更新日志与版本特性
+欢迎任何形式的贡献。
 
-### 2.1.0
+1. 修改代码前请先阅读 [CONTRIBUTING.md](./CONTRIBUTING.md)。
+2. 提交 Issue 时请附上版本、运行环境、最小复现步骤和完整错误输出。
+3. 提交 Pull Request 前请补充或更新测试，并保持每次改动聚焦。
+4. 请勿提交密钥、Token、个人数据或生产环境配置。
 
-- 完善 curl 命令解析与 HTTP 请求执行链路。
-- 支持注解代理、XML 配置代理和方法引用调用。
-- 支持变量替换、XML 条件渲染、文件上传下载和批量执行。
-- 支持超时、重试、重定向、连接池及 OkHttp 拦截器配置。
+## 许可证
 
-更多版本信息请查看 [Releases](https://github.com/dromara/jquick-curl/releases) 与提交记录。
-
-## 开源协议
-
-JQuickCurl 使用 [Apache License 2.0](./LICENSE) 开源。使用、修改和分发本项目时，请遵守许可证中的版权、专利和声明保留条款。
-
-## 贡献指南
-
-欢迎通过以下方式参与：
-
-1. 使用前先阅读 [CONTRIBUTING.md](./CONTRIBUTING.md)。
-2. 提交 Issue 时提供版本、运行环境、最小复现代码和完整错误信息。
-3. 提交 Pull Request 前补充或更新测试，并保持改动聚焦。
-4. 不要提交密钥、Token、个人数据或生产环境配置。
-
-## 项目归属与支持
-
-JQuickCurl 现归属于 [Dromara 开源组织](https://dromara.org/)，项目主仓库为 [github.com/dromara/jquick-curl](https://github.com/dromara/jquick-curl)。
-
-如果 JQuickCurl 帮助你减少了 HTTP 请求代码，欢迎在 GitHub 上 [Star](https://github.com/dromara/jquick-curl) 和 [Fork](https://github.com/dromara/jquick-curl/fork)，也欢迎提交 Issue 和 Pull Request。
-
-## Awesome Java
-
-JQuickCurl 已收录至 [Awesome Java](https://github.com/akullpp/awesome-java) 的 HTTP Clients 分类。
+jquick-curl 基于 [Apache License 2.0](./LICENSE) 开源。使用、修改或分发本项目时，请遵守协议条款，包括版权、专利与声明要求。
