@@ -16,7 +16,7 @@
   <a href="./README.md">English</a> | <b>简体中文</b>
 </p>
 
-**jquick-curl** 是一款面向 Java 的轻量 HTTP 客户端，原生模仿 curl 风格 API：把一条普通的 curl 命令写成 Java 方法即可发起请求。命令由 ANTLR 解析，并通过带连接池的高性能传输层执行，因此无需手写任何请求构建代码。jquick-curl 是 JQuick 生态的子项目，由 [Dromara](https://dromara.org/) 开源社区维护。
+**jquick-curl** 是一款面向 Java 的轻量 HTTP 客户端，原生模仿 curl 风格 API：把一条普通的 curl 命令写成 Java 方法即可发起请求。命令由 ANTLR 解析，并通过带连接池的高性能传输层执行，因此无需手写任何请求构建代码。jquick-curl 是 JQuick 生态的子项目，由 [Dromara](https://github.com/dromara/jquick-curl) 开源社区维护。
 
 ⭐ 本项目已被 [Awesome Java](https://github.com/akullpp/awesome-java) 列表收录。
 
